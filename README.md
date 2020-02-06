@@ -8,3 +8,12 @@ Sistema para escalonamento e orquestração de execuções, visando a automatiza
 - **Empacotamento:** Responsável por padronizar os dados no formato de datapackages;
 - **Armazenamento:** Responsável por armazenar os dados extraídos, além de versionar também os artefatos baixados e gerados durante a coleta; 
 
+### Dependências
+
+- go1.13
+
+### Instalação
+
+[Tutorial de instalação do go](https://www.digitalocean.com/community/tutorials/como-instalar-o-go-e-configurar-um-ambiente-de-programacao-local-no-ubuntu-18-04-pt), atenção apenas para fazer o download da versão correta.
+
+### Tutorial
