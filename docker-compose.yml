@@ -14,7 +14,7 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  dev:
+  golang:
     container_name: 'alba-environment' 
     build: .    
     volumes:
