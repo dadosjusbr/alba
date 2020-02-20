@@ -1,18 +1,33 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"context"
+	"time"
 
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 const database = "alba"
 const collection = "collector"
 const uri = "mongodb://root:example@mongo:27017"
+
+type Collector struct {
+	Name               string
+	Entity             string
+	City               string
+	Uf                 string
+	UpdateDate         time.Time
+	Path               string
+	IDversion          string
+	Frequency          int
+	DayOne             int
+	LimitMonthBackward int
+	LimitYearBackward  int
+}
 
 func main() {
 
@@ -24,11 +39,11 @@ func main() {
 		log.Fatal("Insert error")
 	}
 	if disconect(client) != nil {
-		log.Fatal("Disconect error")	
+		log.Fatal("Disconect error")
 	}
 }
 
-func conect() (*mongo.Client, error){
+func conect() (*mongo.Client, error) {
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
@@ -39,18 +54,18 @@ func conect() (*mongo.Client, error){
 	return client, nil
 }
 
-func insertCollector(client *mongo.Client) error{
+func insertCollector(client *mongo.Client) error {
 	collection := client.Database(database).Collection(collection)
 	res, err := collection.InsertOne(context.TODO(), bson.M{"name": "trt13", "path": "coletores/trt13/trt13"})
 	if err != nil {
 		return err
 	}
-	fmt.Println("Inserted a single document: ", res.InsertedID)	
+	fmt.Println("Inserted a single document: ", res.InsertedID)
 
 	return nil
 }
 
-func disconect(client *mongo.Client) error{
+func disconect(client *mongo.Client) error {
 	err := client.Disconnect(context.TODO())
 	if err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)
@@ -58,4 +73,20 @@ func disconect(client *mongo.Client) error{
 	fmt.Println("Connection to MongoDB closed.")
 
 	return nil
+}
+
+func addCollector() {
+
+}
+
+func updateCollector() {
+
+}
+
+func getCollector() {
+
+}
+
+func deleteCollectorr() {
+
 }
