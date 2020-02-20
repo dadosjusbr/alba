@@ -18,11 +18,10 @@ services:
     container_name: 'alba-environment' 
     build: .    
     volumes:
-      - ./:/go/src/alba/cli
+      - ./:/go/src/alba
     depends_on:
       - mongo
-    working_dir: /go/src/alba/cli
-
+    working_dir: /go/src/alba
 
 volumes:
   mongo_data:
