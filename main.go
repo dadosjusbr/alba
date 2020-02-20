@@ -10,54 +10,48 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const database = "alba"
+const collection = "collector"
+const uri = "mongodb://root:example@mongo:27017"
+
 func main() {
 
-	insert_collector()
-}
-
-func insert_collector(){
-
-	client := conect()
-	collection := client.Database("alba").Collection("collector")
-	res, err := collection.InsertOne(context.TODO(), bson.M{"name": "trt13", "path": "coletores/trt13/trt13"})
-	
+	client, err := conect()
 	if err != nil {
 		log.Fatal(err)
 	}
-	
-	fmt.Println("Inserted a single document: ", res.InsertedID)	
-
-	disconect(client)
+	if insertCollector(client) != nil {
+		log.Fatal("Insert error")
+	}
+	if disconect(client) != nil {
+		log.Fatal("Disconect error")	
+	}
 }
 
 func conect() *mongo.Client{
-
-	clientOptions := options.Client().ApplyURI("mongodb://root:example@mongo:27017")
-
+	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
-
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
-
-	err = client.Ping(context.TODO(), nil)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	fmt.Println("Connected to MongoDB!")
 
 	return client
 }
 
-func disconect(client *mongo.Client){
-
-	err := client.Disconnect(context.TODO())
-
+func insertCollector(client *mongo.Client){
+	collection := client.Database(database).Collection(collection)
+	res, err := collection.InsertOne(context.TODO(), bson.M{"name": "trt13", "path": "coletores/trt13/trt13"})
 	if err != nil {
-		log.Fatal(err)
+		return err
+	}
+	fmt.Println("Inserted a single document: ", res.InsertedID)	
+}
+
+func disconect(client *mongo.Client){
+	err := client.Disconnect(context.TODO())
+	if err != nil {
+		return err
 	}
 	fmt.Println("Connection to MongoDB closed.")
-
 }
