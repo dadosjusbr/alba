@@ -28,30 +28,34 @@ func main() {
 	}
 }
 
-func conect() *mongo.Client{
+func conect() (*mongo.Client, error){
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return err
+		return client, err
 	}
 	fmt.Println("Connected to MongoDB!")
 
-	return client
+	return client, nil
 }
 
-func insertCollector(client *mongo.Client){
+func insertCollector(client *mongo.Client) error{
 	collection := client.Database(database).Collection(collection)
 	res, err := collection.InsertOne(context.TODO(), bson.M{"name": "trt13", "path": "coletores/trt13/trt13"})
 	if err != nil {
 		return err
 	}
 	fmt.Println("Inserted a single document: ", res.InsertedID)	
+
+	return nil
 }
 
-func disconect(client *mongo.Client){
+func disconect(client *mongo.Client) error{
 	err := client.Disconnect(context.TODO())
 	if err != nil {
-		return err
+		return fmt.Errorf("error trying to disconnect:%q", err)
 	}
 	fmt.Println("Connection to MongoDB closed.")
+
+	return nil
 }
