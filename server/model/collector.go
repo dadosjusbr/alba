@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,23 +14,22 @@ const collector = "collector"
 const uri = "mongodb://root:example@mongo:27017"
 
 //Collector represents the information needed for frequent data collection operation
+// Todo: Adicionar descrições nos campos
 type Collector struct {
-	ID                 primitive.ObjectID `bson:"_id"`
-	Name               string             `bson:"name"`
-	Entity             string             `bson:"entity"`
-	City               string             `bson:"city"`
-	Uf                 string             `bson:"uf"`
-	UpdateDate         time.Time          `bson:"update_date"`
-	Path               string             `bson:"path"`
-	IDVersion          string             `bson:"id_version"`
-	Frequency          int                `bson:"frequency"`
-	StartDay           int                `bson:"start_day"`
-	LimitMonthBackward int                `bson:"limit_month_backward"`
-	LimitYearBackward  int                `bson:"limit_year_backward"`
+	Name               string    `bson:"name"`
+	Entity             string    `bson:"entity"`
+	City               string    `bson:"city"`
+	FU                 string    `bson:"uf"`
+	UpdateDate         time.Time `bson:"update_date"`
+	Path               string    `bson:"path"`
+	Frequency          int       `bson:"frequency"`
+	StartDay           int       `bson:"start_day"`
+	LimitMonthBackward int       `bson:"limit_month_backward"`
+	LimitYearBackward  int       `bson:"limit_year_backward"`
 }
 
 // InsertCollector insert an collector array
-func InsertCollector(collectors []interface{}) error {
+func InsertCollector(newCollector Collector) error {
 
 	client, err := conect()
 	if err != nil {
@@ -40,11 +38,11 @@ func InsertCollector(collectors []interface{}) error {
 
 	database := client.Database(database)
 	collectorCollection := database.Collection(collector)
-	res, err := collectorCollection.InsertMany(context.TODO(), collectors)
+	res, err := collectorCollection.InsertOne(context.TODO(), newCollector)
 	if err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
-	fmt.Println("inserted an array of documents: ", res.InsertedIDs)
+	fmt.Println("inserted an array of documents: ", res.InsertedID)
 
 	disconect := disconect(client)
 	if disconect != nil {
