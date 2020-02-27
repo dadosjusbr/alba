@@ -6,9 +6,11 @@ import (
 	"log"
 	"os"
 	"time"
+
+	"github.com/dadosjusbr/alba/server/model"
 )
 
-func readCollectorData(name, entity, city, uf string) Collector {
+func readCollectorData(name, entity, city, uf string) model.Collector {
 
 	updateDate := time.Now()
 
@@ -24,9 +26,9 @@ func readCollectorData(name, entity, city, uf string) Collector {
 	var frequency int
 	fmt.Scanf("%d", &frequency)
 
-	fmt.Print("4/6 - Enter collector day one: ")
-	var dayOne int
-	fmt.Scanf("%d", &dayOne)
+	fmt.Print("4/6 - Enter start day of collector : ")
+	var startDay int
+	fmt.Scanf("%d", &startDay)
 
 	fmt.Print("5/6 - Enter collector limit month backward: ")
 	var limitMonthBackward int
@@ -36,8 +38,8 @@ func readCollectorData(name, entity, city, uf string) Collector {
 	var limitYearBackward int
 	fmt.Scanf("%d", &limitYearBackward)
 
-	return Collector{name, entity, city, uf, updateDate,
-		path, idVersion, frequency, dayOne, limitMonthBackward,
+	return model.Collector{name, entity, city, uf, updateDate,
+		path, idVersion, frequency, startDay, limitMonthBackward,
 		limitYearBackward}
 }
 
@@ -58,5 +60,5 @@ func main() {
 	newCollector := readCollectorData(*name, *entity, *city, *uf)
 
 	fmt.Println("New Collector: ", newCollector)
-	//insert_collector(new_collector)
+	model.InsertCollector(newCollector)
 }
