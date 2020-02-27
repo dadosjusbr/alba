@@ -1,4 +1,4 @@
-package mcollector
+package model
 
 import (
 	"context"
