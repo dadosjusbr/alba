@@ -8,20 +8,6 @@ import (
 	"time"
 )
 
-type Collector struct {
-	Name               string
-	Entity             string
-	City               string
-	Uf                 string
-	UpdateDate         time.Time
-	Path               string
-	IDversion          string
-	Frequency          int
-	DayOne             int
-	LimitMonthBackward int
-	LimitYearBackward  int
-}
-
 func readCollectorData(name, entity, city, uf string) Collector {
 
 	updateDate := time.Now()
@@ -55,7 +41,7 @@ func readCollectorData(name, entity, city, uf string) Collector {
 		limitYearBackward}
 }
 
-func teste() {
+func main() {
 
 	name := flag.String("name", "", "Name of collector")
 	entity := flag.String("entity", "", "Name of the entity from which the collector extracts data")
@@ -69,8 +55,8 @@ func teste() {
 		os.Exit(1)
 	}
 
-	new_collector := readCollectorData(*name, *entity, *city, *uf)
+	newCollector := readCollectorData(*name, *entity, *city, *uf)
 
-	fmt.Println("New Collector: ", new_collector)
+	fmt.Println("New Collector: ", newCollector)
 	//insert_collector(new_collector)
 }
