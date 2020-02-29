@@ -10,7 +10,7 @@ import (
 	"github.com/dadosjusbr/alba/manager/model"
 )
 
-func readCollectorData(name, entity, city, uf string) model.Collector {
+func readCollectorData(ID, entity, city, FU string) model.Collector {
 
 	updateDate := time.Now()
 
@@ -34,26 +34,26 @@ func readCollectorData(name, entity, city, uf string) model.Collector {
 	var limitYearBackward int
 	fmt.Scanf("%d", &limitYearBackward)
 
-	return model.Collector{name, entity, city, uf, updateDate,
-		path, idVersion, frequency, startDay, limitMonthBackward,
+	return model.Collector{ID, entity, city, FU, updateDate,
+		path, frequency, startDay, limitMonthBackward,
 		limitYearBackward}
 }
 
 func main() {
 
-	ID := flag.String("id", "", "Initials entity")
+	id := flag.String("id", "", "Initials entity")
 	entity := flag.String("entity", "", "Name of the entity from which the collector extracts data")
 	city := flag.String("city", "", "Name of the entity city")
-	FU := flag.String("fu", "", "FU of entity city")
+	fu := flag.String("fu", "", "FU of entity city")
 
 	flag.Parse()
 
-	if *ID == "" || *entity == "" || *city == "" || *FU == "" {
+	if *id == "" || *entity == "" || *city == "" || *fu == "" {
 		log.Fatal("ID, Entity, City or FU not provided. Please provide those to continue. --id={} --entity={} --city={} --fu={}\n")
 		os.Exit(1)
 	}
 
-	newCollector := readCollectorData(*ID, *entity, *city, *FU)
+	newCollector := readCollectorData(*id, *entity, *city, *fu)
 
 	fmt.Println("New Collector: ", newCollector)
 	model.InsertCollector(newCollector)
