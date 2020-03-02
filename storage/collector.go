@@ -1,4 +1,4 @@
-package model
+package storage
 
 import (
 	"context"
@@ -19,8 +19,8 @@ type Collector struct {
 	Entity             string    `bson:"entity"`               // Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'.
 	City               string    `bson:"city"`                 // City of the entity from which the collector extracts data.
 	FU                 string    `bson:"fu"`                   // Federation unit of the entity from which the collector extracts data.
-	UpdateDate         time.Time `bson:"update_date"`          // Update data of the collector register.
-	Path               string    `bson:"path"`                 // Collector repository path. Using the import pattern in golang like 'github.com/dadosjusbr/coletores/tree/master/trt13'.
+	UpdateDate         time.Time `bson:"update_date"`          // Last time the collector register has been updated.
+	Path               string    `bson:"path"`                 // Collector repository path. Using the import pattern in golang like 'github.com/dadosjusbr/coletores/trt13'.
 	Frequency          int       `bson:"frequency"`            // Frequency of the collector execution in days. Values must be between 1 and 30. To be executed monthly it must be filled with '30'.
 	StartDay           int       `bson:"start_day"`            // Day of the month for the collector execution. Values must be between 1 and 30.
 	LimitMonthBackward int       `bson:"limit_month_backward"` // The limit month to which the collector must be executed in its historical execution.
@@ -29,7 +29,6 @@ type Collector struct {
 
 // InsertCollector insert an collector array
 func InsertCollector(newCollector Collector) error {
-
 	client, err := conect()
 	if err != nil {
 		return fmt.Errorf("connect error: %q", err)

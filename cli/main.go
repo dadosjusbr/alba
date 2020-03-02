@@ -7,34 +7,33 @@ import (
 	"os"
 	"time"
 
-	"github.com/dadosjusbr/alba/manager/model"
+	"github.com/dadosjusbr/alba/storage"
 )
 
-func readCollectorData(ID, entity, city, FU string) model.Collector {
-
+func readCollectorData(ID, entity, city, FU string) storage.Collector {
 	updateDate := time.Now()
 
-	fmt.Print("1/6 - Enter collector path: ")
+	fmt.Print("1/5 - Enter collector path: ")
 	var path string
 	fmt.Scanf("%s", &path)
 
-	fmt.Print("3/6 - Enter collector frequency: ")
+	fmt.Print("2/5 - Enter collector frequency: ")
 	var frequency int
 	fmt.Scanf("%d", &frequency)
 
-	fmt.Print("4/6 - Enter start day of collector : ")
+	fmt.Print("3/5 - Enter start day of collector : ")
 	var startDay int
 	fmt.Scanf("%d", &startDay)
 
-	fmt.Print("5/6 - Enter collector limit month backward: ")
+	fmt.Print("4/5 - Enter collector limit month backward: ")
 	var limitMonthBackward int
 	fmt.Scanf("%d", &limitMonthBackward)
 
-	fmt.Print("6/6 - Enter collector limit year backward: ")
+	fmt.Print("5/5 - Enter collector limit year backward: ")
 	var limitYearBackward int
 	fmt.Scanf("%d", &limitYearBackward)
 
-	return model.Collector{ID, entity, city, FU, updateDate,
+	return storage.Collector{ID, entity, city, FU, updateDate,
 		path, frequency, startDay, limitMonthBackward,
 		limitYearBackward}
 }
@@ -56,5 +55,5 @@ func main() {
 	newCollector := readCollectorData(*id, *entity, *city, *fu)
 
 	fmt.Println("New Collector: ", newCollector)
-	model.InsertCollector(newCollector)
+	storage.InsertCollector(newCollector)
 }

@@ -1,4 +1,4 @@
-module github.com/dadosjusbr/alba/server/model
+module github.com/dadosjusbr/alba/storage
 
 go 1.13
 
