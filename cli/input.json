@@ -1,0 +1,11 @@
+{
+"id": "trt13",
+"entity": "Tribunal Regional do Trabalho 13ª Região",
+"city": "João Pessoa",
+"fu": "PB",
+"path": "github.com/dadosjusbr/coletores/tree/master/trt13",
+"frequency": 30,
+"start_day": 5,
+"limit_month_backward": 2,
+"limit_year_backward": 2018,
+}
