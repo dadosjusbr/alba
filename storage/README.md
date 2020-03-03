@@ -1,3 +1,3 @@
 # Storage
 
-Módulo responsável por prover todas as operações de armazenamento.
+Pacote responsável por prover todas as operações de armazenamento.

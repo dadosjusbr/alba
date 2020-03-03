@@ -1,3 +1,3 @@
 # Manager
 
-Módulo responsável por prover todas as operações de gerenciamento das execuções dos coletores.
+Pacote responsável por prover todas as operações de gerenciamento das execuções dos coletores.
