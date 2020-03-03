@@ -8,4 +8,26 @@ Sistema para orquestração e escalonamento de execuções, visando a automatiza
 - **Empacotamento:** Responsável por padronizar os dados no formato de datapackages;
 - **Armazenamento:** Responsável por armazenar os dados extraídos, além de versionar também os artefatos baixados e gerados durante a coleta; 
 
-Esse projeto é financiado pela [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/) na modalidade de Flash Grants.
+Esse projeto é financiado na modalidade de Flash Grants pela [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/), a quem agredecemos muito pelo suporte e incentivo.
+
+## Configuração de ambiente
+Após instalar as ferramentas docker e docker-composer é possível levantar as instâncias do projeto utilizando:
+
+ `docker-compose up -d`
+
+ Esse comando vai levantar um container para o banco de dados mongodb e fazer o build de outro container com as configurações necessárias para execução dos pacotes em go.
+
+Além de utilizar a linha de comando, é possível se conectar ao banco de dados utilizando a ferramenta [Mongo Compass Community](https://www.mongodb.com/download-center/compass?jmp=docs). Ao abrir a ferramenta deve-se selecionar o modo de autenticação Username / Password, onde `Username` é `root` e `Password` é `example`.
+
+## Execução da CLI
+
+É possível visualizar os comandos da CLI através do comando:
+
+`docker-compose run golang go run cli/alba.go`
+
+Para o cadastro de um coletor deve-se configurar um arquivo em formato JSON com as informações necessárias. Conforme o [arquivo de exemplo]().
+
+Para executar o cadastro:
+
+`docker-compose run golang go run cli/alba.go addCollector --file="cli/input.json"`
+
