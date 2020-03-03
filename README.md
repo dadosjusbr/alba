@@ -25,7 +25,7 @@ Além de utilizar a linha de comando, é possível se conectar ao banco de dados
 
 `docker-compose run golang go run cli/alba.go`
 
-Para o cadastro de um coletor deve-se configurar um arquivo em formato JSON com as informações necessárias. Conforme o [arquivo de exemplo]().
+Para o cadastro de um coletor deve-se configurar um arquivo em formato JSON com as informações necessárias. Conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/comando-cli/cli/input.json).
 
 Para executar o cadastro:
 
