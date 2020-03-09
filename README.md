@@ -30,4 +30,3 @@ Para o cadastro de um coletor deve-se configurar um arquivo em formato JSON com 
 Para executar o cadastro:
 
 `docker-compose run golang go run cli/alba.go addCollector --file="cli/input.json"`
-
