@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -43,15 +42,15 @@ func main() {
 
 	app.Commands = []*cli.Command{
 		{
-			Name:   "add",
+			Name:   "add-collector",
 			Usage:  "Register a collector from parameters",
-			Action: add,
+			Action: addCollector,
 			Flags:  flagsAddCollector,
 			Subcommands: []*cli.Command{
 				{
-					Name:   "fromFile",
+					Name:   "from-file",
 					Usage:  "Register a collector from a JSON file",
-					Action: add,
+					Action: addCollector,
 					Before: altsrc.InitInputSourceWithContext(flagsAddCollectorFromFile, altsrc.NewJSONSourceFromFlagFunc("file")),
 					Flags:  flagsAddCollectorFromFile,
 				},
@@ -65,8 +64,7 @@ func main() {
 	}
 }
 
-func add(c *cli.Context) error {
-	fmt.Println(c.String("id"))
+func addCollector(c *cli.Context) error {
 	newCollector, err := parseCollectorFromContext(c)
 	if err != nil {
 		return err
@@ -87,11 +85,41 @@ func parseCollectorFromContext(c *cli.Context) (storage.Collector, error) {
 	startDay := c.Int("startDay")
 	limitMonthBackward := c.Int("limitMonthBackward")
 	limitYearBackward := c.Int("limitYearBackward")
-	updateDate := getUpdateDate()
+	updateDate := time.Now()
 
-	if id == "" || entity == "" || city == "" || fu == "" || path == "" || frequency == 0 ||
-		startDay == 0 || limitMonthBackward == 0 || limitYearBackward == 0 {
-		return storage.Collector{}, cli.Exit("Parameters were not provided completely. Please provide those to continue", 1)
+	if id == "" {
+		return storage.Collector{}, cli.Exit("--id were not provided completely. Please provide all parameters to continue", 1)
+	}
+	if entity == "" {
+		return storage.Collector{}, cli.Exit("--entity were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if city == "" {
+		return storage.Collector{}, cli.Exit("--city were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if fu == "" {
+		return storage.Collector{}, cli.Exit("--fu were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if path == "" {
+		return storage.Collector{}, cli.Exit("--path were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if frequency == 0 {
+		return storage.Collector{}, cli.Exit("--frequency were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if startDay == 0 {
+		return storage.Collector{}, cli.Exit("--startDay were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if limitMonthBackward == 0 {
+		return storage.Collector{}, cli.Exit("--limitMonthBackward were not provided completely. Please provide all parameters to continue", 1)
+
+	}
+	if limitYearBackward == 0 {
+		return storage.Collector{}, cli.Exit("--limitYearBackward were not provided completely. Please provide all parameters to continue", 1)
 	}
 
 	newCollector := storage.Collector{
@@ -107,8 +135,4 @@ func parseCollectorFromContext(c *cli.Context) (storage.Collector, error) {
 		LimitYearBackward:  limitYearBackward}
 
 	return newCollector, nil
-}
-
-func getUpdateDate() time.Time {
-	return time.Now()
 }

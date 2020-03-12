@@ -8,4 +8,4 @@ Sistema para orquestração e escalonamento de execuções, visando a automatiza
 - **Empacotamento:** Responsável por padronizar os dados no formato de datapackages;
 - **Armazenamento:** Responsável por armazenar os dados extraídos, além de versionar também os artefatos baixados e gerados durante a coleta; 
 
-Esse projeto é financiado na modalidade de Flash Grants pela [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/), a quem agredecemos muito pelo suporte e incentivo.
+Esse projeto é financiado na modalidade de Flash Grants pela [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/), a quem agradecemos muito pelo suporte e incentivo.
