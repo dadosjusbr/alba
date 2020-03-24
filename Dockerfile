@@ -1,10 +1,14 @@
 FROM golang:1.13.8-alpine3.11
 
+WORKDIR /go/src/github.com/dadosjusbr/alba/
+
+COPY . .
+
 RUN apk add git
 
-## TODO: compilar o programa aqui.
+RUN cd storage && go install
 
-RUN go get go.mongodb.org/mongo-driver/mongo
+# TODO criar pacote da cli
 RUN go get github.com/urfave/cli
 RUN go get github.com/urfave/cli/altsrc
 
