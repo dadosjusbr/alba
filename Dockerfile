@@ -8,6 +8,8 @@ COPY . /go/src/github.com/dadosjusbr/alba/
 
 RUN apk add bash
 
+RUN apk add build-base
+
 RUN apk add git
 
 # TODO: Compilar o programa 
