@@ -1,32 +1,31 @@
 package main
 
 import (
+	"os"
 	"testing"
-
-	"github.com/dadosjusbr/alba/storage"
 )
 
-var expectedCollector = storage.Collector{
-	ID:                 "trt13",
-	Entity:             "Tribunal Regional do Trabalho 13ª Região",
-	City:               "João Pessoa",
-	FU:                 "PB",
-	Path:               "github.com/dadosjusbr/coletores/trt13",
-	Frequency:          30,
-	StartDay:           5,
-	LimitMonthBackward: 2,
-	LimitYearBackward:  2018,
-}
-
-// Casos de teste:
-// - Verificar se um input completo foi persisitido no banco
-// - Verificar se um input incompleto foi persistido no banco
-// - Verificar o comando add fromFile
-// - Verificar o comando add
 func TestAddCollector(t *testing.T) {
+	args := os.Args[0:1]
+	args = append(args, "add-collector")
+	args = append(args, "-id=mppb")
+	args = append(args, "-entity=\"Ministério Público da Paraíba\"")
+	args = append(args, "-city=\"João Pessoa\"")
+	args = append(args, "-fu=PB")
+	args = append(args, "-path=\"github.com/dadosjusbr/coletores/mppb\"")
+	args = append(args, "-frequency=30")
+	args = append(args, "-startDay=5")
+	args = append(args, "-limitMonthBackward=1")
+	args = append(args, "-limitYearBackward=2018")
 
+	Run(args)
 }
 
 func TestAddCollectorFromFile(t *testing.T) {
+	args := os.Args[0:1]
+	args = append(args, "add-collector")
+	args = append(args, "from-file")
+	args = append(args, "-file=\"cli/input.json\"")
 
+	Run(args)
 }
