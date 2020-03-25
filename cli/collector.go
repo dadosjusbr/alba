@@ -33,7 +33,7 @@ var flagsAddCollectorFromFile = []cli.Flag{
 	&cli.StringFlag{Name: "file", Usage: "File with collector data", Required: true},
 }
 
-// GetCommandAddCollector return the stuct for add-collector command.
+// GetCommandAddCollector return the struct for add-collector command
 func GetCommandAddCollector() []*cli.Command {
 	command := []*cli.Command{
 		{

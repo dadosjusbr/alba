@@ -18,14 +18,14 @@ func TestAddCollector(t *testing.T) {
 	args = append(args, "-limitMonthBackward=1")
 	args = append(args, "-limitYearBackward=2018")
 
-	Run(args)
+	run(args)
 }
 
 func TestAddCollectorFromFile(t *testing.T) {
 	args := os.Args[0:1]
 	args = append(args, "add-collector")
 	args = append(args, "from-file")
-	args = append(args, "-file=\"cli/input.json\"")
+	args = append(args, "-file=input.json")
 
-	Run(args)
+	run(args)
 }

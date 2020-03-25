@@ -1,17 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/urfave/cli"
 )
 
-//Run execute the cli
-func Run(args []string) {
-	fmt.Println(args)
-
+func run(args []string) {
 	app := cli.NewApp()
 	app.Name = "Alba"
 	app.Usage = "A tool for manage the process of continuous data release through steps such as: collection, validation, packaging and storage."
@@ -24,5 +20,5 @@ func Run(args []string) {
 }
 
 func main() {
-	Run(os.Args)
+	run(os.Args)
 }

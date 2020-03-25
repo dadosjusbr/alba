@@ -19,3 +19,9 @@ fu=PB --path="github.com/dadosjusbr/coletores/mppb" --frequency=30 --startDay=5 
 2) Configurar um arquivo em formato JSON com as informações necessárias, conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/comando-cli/cli/input.json).
 
 `docker-compose run golang go run cli/alba.go add fromFile --file="cli/input.json"`
+
+### Testes
+
+Para execução dos testes de cada comando da CLI:
+
+`docker-compose run golang bash -c "cd cli/ && go test -v"`
