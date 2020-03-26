@@ -7,7 +7,7 @@ import (
 	"github.com/urfave/cli"
 )
 
-func run(args []string) {
+func run(args []string) error {
 	app := cli.NewApp()
 	app.Name = "Alba"
 	app.Usage = "A tool for manage the process of continuous data release through steps such as: collection, validation, packaging and storage."
@@ -15,10 +15,15 @@ func run(args []string) {
 
 	err := app.Run(args)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+
+	return nil
 }
 
 func main() {
-	run(os.Args)
+	err := run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
