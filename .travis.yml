@@ -1,0 +1,13 @@
+language: go
+
+go:
+  - "1.13.7"
+ 
+notifications:
+  email: true
+
+before_script:
+  - go install github.com/golangci/golangci-lint/cmd/golangci-lint    
+
+script:
+  - cd cli && go test -v 
