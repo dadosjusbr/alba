@@ -2,9 +2,15 @@ language: go
 
 go:
   - "1.13.7"
- 
+
+services:
+  - docker
+
 notifications:
   email: true
 
+before_install:
+  - docker-composer up --build -d
+
 script:
-  - cd cli && go test -v 
+  - docker-compose run golang bash -c "cd cli/ && go test -v
