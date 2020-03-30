@@ -1,4 +1,7 @@
+[![Build Status](https://travis-ci.org/dadosjusbr/alba.svg?branch=master)](https://travis-ci.org/dadosjusbr/alba) [![codecov.io](http://codecov.io/github/dadosjusbr/alba/coverage.svg?branch=master)](http://codecov.io/github/dadosjusbr/alba?branch=master) [![Go Report Card](https://goreportcard.com/badge/github.com/dadosjusbr/alba)](https://goreportcard.com/report/github.com/dadosjusbr/alba) [![GoDoc](https://godoc.org/github.com/dadosjusbr/alba?status.svg)](https://godoc.org/github.com/dadosjusbr/alba)
+
 # Alba
+
 ## Sistema de Orquestração de Execuções DadosJusBR
 
 Sistema para orquestração e escalonamento de execuções, visando a automatização de processos do [DadosJusBR](https://dadosjusbr.com/). A função principal da ferramenta é gerenciar o processo de libertação contínua de dados de remuneração do sistema de justiça brasileiro, que inclui as etapas de:
