@@ -72,7 +72,7 @@ func (cmd add) do(c *cli.Context) error {
 	if err := cmd.inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
-	fmt.Printf("%+v", collector)
+	fmt.Printf("Collector ID: %v, Path: %v", collector.ID, collector.Path)
 	return nil
 }
 
