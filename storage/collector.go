@@ -36,11 +36,10 @@ func InsertCollector(newCollector Collector) error {
 
 	database := client.Database(database)
 	collectorCollection := database.Collection(collector)
-	res, err := collectorCollection.InsertOne(context.TODO(), newCollector)
+	_, err = collectorCollection.InsertOne(context.TODO(), newCollector)
 	if err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
-	fmt.Println("inserted an array of documents: ", res.InsertedID)
 
 	disconect := disconect(client)
 	if disconect != nil {
@@ -57,7 +56,6 @@ func conect() (*mongo.Client, error) {
 	if err != nil {
 		return client, err
 	}
-	fmt.Println("os env connected to MongoDB! ->", uri)
 
 	return client, nil
 }
@@ -67,7 +65,6 @@ func disconect(client *mongo.Client) error {
 	if err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)
 	}
-	fmt.Println("Connection to MongoDB closed.")
 
 	return nil
 }
