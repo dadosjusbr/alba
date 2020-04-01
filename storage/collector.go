@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,7 +12,6 @@ import (
 
 const database = "alba"
 const collector = "collector"
-const uri = "mongodb://root:example@mongo:27017"
 
 //Collector represents the information needed for frequent data collection operation
 type Collector struct {
@@ -51,12 +51,13 @@ func InsertCollector(newCollector Collector) error {
 }
 
 func conect() (*mongo.Client, error) {
+	uri := os.Getenv("MONGODB")
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return client, err
 	}
-	fmt.Println("connected to MongoDB!")
+	fmt.Println("os env connected to MongoDB! ->", uri)
 
 	return client, nil
 }
