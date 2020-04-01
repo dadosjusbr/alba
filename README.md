@@ -20,7 +20,8 @@ Esse projeto é financiado na modalidade de Flash Grants pela [Shuttleworth Foun
 
 `export MONGODB=mongodb://<usuario>:<senha>@<ip-do-servidor>:<porta>`
 
-Se for executar para o servidor Mongo configurado no [docker-composer.yml]() é só usar `export MONGODB mongodb://root:example@localhost:28017`
+Se for executar para o servidor Mongo configurado no [docker-composer.yml](https://github.com/dadosjusbr/alba/blob/export-uri-mongodb/docker-compose.yml) é só usar 
+`export MONGODB=mongodb://root:example@localhost:28017`
 
 2) Levantar o container do banco de dados executando:
 `docker-compose up -d`
