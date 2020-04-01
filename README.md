@@ -12,3 +12,15 @@ Sistema para orquestração e escalonamento de execuções, visando a automatiza
 - **Armazenamento:** Responsável por armazenar os dados extraídos, além de versionar também os artefatos baixados e gerados durante a coleta; 
 
 Esse projeto é financiado na modalidade de Flash Grants pela [Shuttleworth Foundation](https://www.shuttleworthfoundation.org/), a quem agradecemos muito pelo suporte e incentivo.
+
+
+## Configuração do ambiente
+
+1) Após realizar o git clone do projeto é necessário exportar a variável de ambiente para o servidor Mongo:
+
+`export MONGODB=mongodb://<usuario>:<senha>@<ip-do-servidor>:<porta>`
+
+Se for executar para o servidor Mongo configurado no [docker-composer.yml]() é só usar `export MONGODB mongodb://root:example@localhost:28017`
+
+2) Levantar o container do banco de dados executando:
+`docker-compose up -d`
