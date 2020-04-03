@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -13,7 +14,7 @@ import (
 )
 
 const database = "alba"
-const collector = "collector"
+const collectorCollection = "collector"
 
 //Collector represents the information needed for frequent data collection operation
 type Collector struct {
@@ -36,9 +37,9 @@ func InsertCollector(newCollector Collector) error {
 		return fmt.Errorf("connect error: %q", err)
 	}
 
-	collectorCollection := client.Database(database).Collection(collector)
-	setIndexesCollector(collectorCollection)
-	_, err = collectorCollection.InsertOne(context.TODO(), newCollector)
+	collectorC := client.Database(database).Collection(collectorCollection)
+	setIndexesCollector(collectorC)
+	_, err = collectorC.InsertOne(context.TODO(), newCollector)
 	if err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
@@ -51,7 +52,7 @@ func InsertCollector(newCollector Collector) error {
 	return nil
 }
 
-func setIndexesCollector(collectorCollection *mongo.Collection) error {
+func setIndexesCollector(collectorC *mongo.Collection) error {
 	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
 	indexes := []mongo.IndexModel{
 		{
@@ -64,7 +65,7 @@ func setIndexesCollector(collectorCollection *mongo.Collection) error {
 		},
 	}
 
-	_, err := collectorCollection.Indexes().CreateMany(context.Background(), indexes, opts)
+	_, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts)
 	if err != nil {
 		return fmt.Errorf("create index error: %q", err)
 	}
@@ -73,39 +74,94 @@ func setIndexesCollector(collectorCollection *mongo.Collection) error {
 }
 
 // GetCollectors return all collectors in the database
-func GetCollectors() ([]*Collector, error) {
-	var collectors []*Collector
+func GetCollectors() ([]byte, error) {
+	var collectors []Collector
 
 	client, err := conect()
 	if err != nil {
-		return collectors, fmt.Errorf("connect error: %q", err)
+		return nil, fmt.Errorf("connect error: %q", err)
 	}
 
-	collectorCollection := client.Database(database).Collection(collector)
-	itens, err := collectorCollection.Find(context.TODO(), bson.D{{}})
+	collectorC := client.Database(database).Collection(collectorCollection)
+	itens, err := collectorC.Find(context.TODO(), bson.D{{}})
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("Find error: %q", err)
+	}
+
 	for itens.Next(context.TODO()) {
 		var item Collector
 		err := itens.Decode(&item)
 		if err != nil {
-			return collectors, fmt.Errorf("decode error in collector: %q", err)
+			return nil, fmt.Errorf("decode error in collector: %q", err)
 		}
-
-		collectors = append(collectors, &item)
+		collectors = append(collectors, item)
 	}
 	itens.Close(context.TODO())
 
 	disconect := disconect(client)
 	if disconect != nil {
-		return collectors, fmt.Errorf("disconect error: %q", disconect)
+		return nil, fmt.Errorf("disconect error: %q", disconect)
 	}
 
-	return collectors, nil
+	collectorsJSON, _ := json.Marshal(collectors)
+	return collectorsJSON, nil
 }
 
-// GetCollector find and return a collector from the path
-func GetCollector(path string) (Collector, error) {
+// GetCollectorByID find and return a collector by id
+func GetCollectorByID(id string) ([]byte, error) {
+	var collector Collector
 
-	return Collector{}, nil
+	client, err := conect()
+	if err != nil {
+		return nil, fmt.Errorf("connect error: %q", err)
+	}
+
+	collectorC := client.Database(database).Collection(collectorCollection)
+	err = collectorC.FindOne(context.TODO(), bson.D{{Key: "id", Value: id}}).Decode(&collector)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("Find error: %q", err)
+	}
+
+	disconect := disconect(client)
+	if disconect != nil {
+		return nil, fmt.Errorf("disconect error: %q", disconect)
+	}
+
+	collectorJSON, _ := json.Marshal(collector)
+	return collectorJSON, nil
+}
+
+// GetCollectorByPath find and return a collector by path
+func GetCollectorByPath(path string) ([]byte, error) {
+	var collector Collector
+
+	client, err := conect()
+	if err != nil {
+		return nil, fmt.Errorf("connect error: %q", err)
+	}
+
+	collectorC := client.Database(database).Collection(collectorCollection)
+	err = collectorC.FindOne(context.TODO(), bson.D{{Key: "path", Value: path}}).Decode(&collector)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("Find error: %q", err)
+	}
+
+	disconect := disconect(client)
+	if disconect != nil {
+		return nil, fmt.Errorf("disconect error: %q", disconect)
+	}
+
+	collectorJSON, _ := json.Marshal(collector)
+	return collectorJSON, nil
 }
 
 func conect() (*mongo.Client, error) {
