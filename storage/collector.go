@@ -64,11 +64,10 @@ func setIndexesCollector(collectorCollection *mongo.Collection) error {
 		},
 	}
 
-	namesIndexes, err := collectorCollection.Indexes().CreateMany(context.Background(), indexes, opts)
+	_, err := collectorCollection.Indexes().CreateMany(context.Background(), indexes, opts)
 	if err != nil {
 		return fmt.Errorf("create index error: %q", err)
 	}
-	fmt.Println(namesIndexes)
 
 	return nil
 }
