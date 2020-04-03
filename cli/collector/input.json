@@ -5,7 +5,7 @@
 "fu": "PB",
 "path": "github.com/dadosjusbr/coletores/trt13",
 "frequency": 30,
-"startDay": 5,
-"limitMonthBackward": 2,
-"limitYearBackward": 2018
+"start-day": 5,
+"limit-month-backward": 2,
+"limit-year-backward": 2018
 }
