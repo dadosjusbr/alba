@@ -12,6 +12,8 @@ type Message struct {
 	Message string `json:"message"`
 }
 
+const msgNoResults = "No results"
+
 func main() {
 	e := echo.New()
 
@@ -28,30 +30,30 @@ func index(c echo.Context) error {
 	return c.String(http.StatusOK, "HTML com lista dos coletores")
 }
 
-//	e.GET("/alba/api/coletores", viewAllCollectors)
+//e.GET("/alba/api/coletores", viewAllCollectors)
 func viewAllCollectors(c echo.Context) error {
 	result, err := storage.GetCollectors()
 	if err != nil {
+		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
 	if result == nil {
-		msg := Message{"Not found"}
-		return c.JSON(http.StatusOK, msg)
+		return c.JSON(http.StatusOK, Message{msgNoResults})
 	}
 
 	return c.JSONBlob(http.StatusOK, result)
 }
 
-//	e.GET("/alba/api/coletores/:id", viewCollectorByID)
+//e.GET("/alba/api/coletores/:id", viewCollectorByID)
 func viewCollectorByID(c echo.Context) error {
 	id := c.Param("id")
 	result, err := storage.GetCollectorByID(id)
 	if err != nil {
+		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
 	if result == nil {
-		msg := Message{"Not found"}
-		return c.JSON(http.StatusOK, msg)
+		return c.JSON(http.StatusOK, Message{msgNoResults})
 	}
 
 	return c.JSONBlob(http.StatusOK, result)
@@ -62,11 +64,11 @@ func viewCollectorByPath(c echo.Context) error {
 	path := c.QueryParam("path")
 	result, err := storage.GetCollectorByPath(path)
 	if err != nil {
+		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
 	if result == nil {
-		msg := Message{"Not found"}
-		return c.JSON(http.StatusOK, msg)
+		return c.JSON(http.StatusOK, Message{msgNoResults})
 	}
 
 	return c.JSONBlob(http.StatusOK, result)
