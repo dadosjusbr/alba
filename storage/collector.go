@@ -2,7 +2,11 @@ package storage
 
 import (
 	"context"
+<<<<<<< HEAD
 	"encoding/json"
+=======
+	"errors"
+>>>>>>> 2aaf515e3c4907754b100b3cfc4b9c2fd57d286c
 	"fmt"
 	"os"
 	"time"
@@ -34,7 +38,7 @@ type Collector struct {
 func InsertCollector(newCollector Collector) error {
 	client, err := conect()
 	if err != nil {
-		return fmt.Errorf("connect error: %q", err)
+		return err
 	}
 
 	collectorC := client.Database(database).Collection(collectorCollection)
@@ -44,9 +48,9 @@ func InsertCollector(newCollector Collector) error {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
-	disconect := disconect(client)
-	if disconect != nil {
-		return fmt.Errorf("disconect error: %q", disconect)
+	err = disconect(client)
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -166,10 +170,14 @@ func GetCollectorByPath(path string) ([]byte, error) {
 
 func conect() (*mongo.Client, error) {
 	uri := os.Getenv("MONGODB")
+	if uri == "" {
+		return nil, fmt.Errorf("error trying get environment variable:%q", errors.New("$MONGODB is empty"))
+	}
+
 	clientOptions := options.Client().ApplyURI(uri)
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
-		return client, err
+		return nil, fmt.Errorf("error trying to connect:%q", err)
 	}
 
 	return client, nil

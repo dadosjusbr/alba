@@ -13,6 +13,8 @@ matrix:
 
 env:
     - CODECOV_TOKEN="0e27c9e2-a4da-47e9-acaa-ca9e097a5f4f"
+    - MONGODB=mongodb://root:example@localhost:28017`
+
 
 # Anything in before_script that returns a nonzero exit code will
 # flunk the build and immediately stop. It's sorta like having
@@ -22,7 +24,7 @@ before_script:
 
 notifications:
   email: true
-
+  
 script:
   - test -z $(gofmt -s -l $GO_FILES)         # Fail if a .go file hasn't been formatted with gofmt
   - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./... # Run all the tests with the race detector enabled

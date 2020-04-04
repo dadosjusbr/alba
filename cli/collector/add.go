@@ -65,10 +65,13 @@ func (cmd add) do(c *cli.Context) error {
 	} else {
 		collector = fromContext(c)
 	}
-	collector, err := validate(collector)
+	err := validate(collector)
 	if err != nil {
 		return fmt.Errorf("invalid collector descriptor:{%q}", err)
 	}
+
+	collector.UpdateDate = time.Now()
+
 	if err := cmd.inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
@@ -93,37 +96,36 @@ func fromFile(path string) (storage.Collector, error) {
 	return c, nil
 }
 
-func validate(col storage.Collector) (storage.Collector, error) {
+func validate(col storage.Collector) error {
 	if col.ID == "" {
-		return storage.Collector{}, fmt.Errorf("--id were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--id were not provided completely. Please provide all parameters to continue")
 	}
 	if col.Entity == "" {
-		return storage.Collector{}, fmt.Errorf("--entity were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--entity were not provided completely. Please provide all parameters to continue")
 	}
 	if col.City == "" {
-		return storage.Collector{}, fmt.Errorf("--city were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--city were not provided completely. Please provide all parameters to continue")
 	}
 	if col.FU == "" {
-		return storage.Collector{}, fmt.Errorf("--fu were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--fu were not provided completely. Please provide all parameters to continue")
 	}
 	if col.Path == "" {
-		return storage.Collector{}, fmt.Errorf("--path were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--path were not provided completely. Please provide all parameters to continue")
 	}
 	if col.Frequency == 0 {
-		return storage.Collector{}, fmt.Errorf("--frequency were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--frequency were not provided completely. Please provide all parameters to continue")
 	}
 	if col.StartDay == 0 {
-		return storage.Collector{}, fmt.Errorf("--start-day were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--start-day were not provided completely. Please provide all parameters to continue")
 	}
 	if col.LimitMonthBackward == 0 {
-		return storage.Collector{}, fmt.Errorf("--limit-month-backward were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--limit-month-backward were not provided completely. Please provide all parameters to continue")
 	}
 	if col.LimitYearBackward == 0 {
-		return storage.Collector{}, fmt.Errorf("--limit-year-backward were not provided completely. Please provide all parameters to continue")
+		return fmt.Errorf("--limit-year-backward were not provided completely. Please provide all parameters to continue")
 	}
-	col.UpdateDate = time.Now()
 
-	return col, nil
+	return nil
 }
 
 func fromContext(c *cli.Context) storage.Collector {

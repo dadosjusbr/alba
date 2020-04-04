@@ -14,14 +14,5 @@ services:
     volumes:
       - mongo_data:/data/db
 
-  golang:
-    container_name: 'alba-environment' 
-    build: .    
-    volumes:
-      - ./:/go/src/github.com/dadosjusbr/alba/
-    depends_on:
-      - mongo
-    working_dir: /go/src/github.com/dadosjusbr/alba/
-
 volumes:
   mongo_data:
