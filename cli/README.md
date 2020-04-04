@@ -29,6 +29,7 @@ Fazer o build do projeto criando um executável de nome **alba**:
 `go build -o alba`
 
 Visualizar os comandos da CLI através do comando:
+
 `./alba`
 
 O cadastro de um coletor na base de dados da Alba, conforme a estrutura explicada acima, pode ser realizado de duas formas:
