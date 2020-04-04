@@ -16,7 +16,7 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica do
 - limit-month-backward: O mês limite para o qual o coletor deve ser executado de forma histórica. Exemplo: "Gostaria que o coletor que acabei de criar em Abril de 2020 fosse executado de forma histórica até Janeiro de 2019 visto que a estrutura dos dados passados é a mesma."
 - limit-year-backward: O ano limite até o qual o coletor deve ser executado de forma histórica, semelhante ao campo acima
 
-Um exemplo preenchido para cadastro pode ser visto nesse [arquivo](https://github.com/dadosjusbr/alba/blob/comando-cli/cli/input.json).
+Um exemplo preenchido para cadastro pode ser visto nesse [arquivo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/input.json).
 
 ***
 
@@ -43,7 +43,7 @@ O cadastro de um coletor na base de dados da Alba, conforme a estrutura explicad
 fu=PB --path="github.com/dadosjusbr/coletores/mppb" --frequency=30 --start-day=5 --limit-month-backward=1 --limit-year-backward=2018
 ```
 
-**2) Configurar um arquivo em formato JSON com as informações necessárias**, conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/comando-cli/cli/input.json).
+**2) Configurar um arquivo em formato JSON com as informações necessárias**, conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/input.json).
 
 *Exemplo para o coletor do [Tribunal Regional do Trabalho - 13ª região](https://github.com/dadosjusbr/coletores/tree/master/trt13)*
 
