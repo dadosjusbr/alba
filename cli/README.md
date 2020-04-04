@@ -1,6 +1,6 @@
 # CLI
 
-> Interface de linha de comando para interagir com as funcionalidades de persisitência e gerenciamento de coletores.
+Interface de linha de comando para interagir com as funcionalidades de persisitência e gerenciamento de coletores.
 
 Um coletor é uma entidade capaz de extrair informações referentes às remunerações do sistema de justiça brasileiro. Ele é responsável por duas tarefas: baixar os dados do site oficial do órgão e convertê-los para o formato padronizado de [resultado de coleta](https://github.com/dadosjusbr/storage/blob/master/agency.go#L27) (_crawling result_). 
 
