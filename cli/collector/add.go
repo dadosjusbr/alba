@@ -65,13 +65,17 @@ func (cmd add) do(c *cli.Context) error {
 	} else {
 		collector = fromContext(c)
 	}
-	if err := validate(collector); err != nil {
+	err := validate(collector)
+	if err != nil {
 		return fmt.Errorf("invalid collector descriptor:{%q}", err)
 	}
+
+	collector.UpdateDate = time.Now()
+
 	if err := cmd.inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
-	fmt.Printf("%+v", collector)
+	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)
 	return nil
 }
 
@@ -120,6 +124,7 @@ func validate(col storage.Collector) error {
 	if col.LimitYearBackward == 0 {
 		return fmt.Errorf("--limit-year-backward were not provided completely. Please provide all parameters to continue")
 	}
+
 	return nil
 }
 
@@ -129,7 +134,6 @@ func fromContext(c *cli.Context) storage.Collector {
 		Entity:             c.String("entity"),
 		City:               c.String("city"),
 		FU:                 c.String("fu"),
-		UpdateDate:         time.Now(),
 		Path:               c.String("path"),
 		Frequency:          c.Int("frequency"),
 		StartDay:           c.Int("start-day"),

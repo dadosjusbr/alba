@@ -10,18 +10,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
-      - 27017:27017
+      - 28017:27017
     volumes:
       - mongo_data:/data/db
-
-  golang:
-    container_name: 'alba-environment' 
-    build: .    
-    volumes:
-      - ./:/go/src/github.com/dadosjusbr/alba/
-    depends_on:
-      - mongo
-    working_dir: /go/src/github.com/dadosjusbr/alba/
 
 volumes:
   mongo_data:

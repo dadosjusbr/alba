@@ -23,7 +23,8 @@ func ExampleAddCommand() {
 		"add-collector",
 		"-from-file=input.json",
 	})
-	// Output: {ID:trt13 Entity:Tribunal Regional do Trabalho 13ª Região City:João Pessoa FU:PB UpdateDate:0001-01-01 00:00:00 +0000 UTC Path:github.com/dadosjusbr/coletores/trt13 Frequency:30 StartDay:5 LimitMonthBackward:2 LimitYearBackward:2018}
+	// Output: Collector ID: trt13, Path: github.com/dadosjusbr/coletores/trt13
+
 }
 
 func TestAdd_Sucess(t *testing.T) {
