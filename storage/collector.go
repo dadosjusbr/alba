@@ -38,7 +38,7 @@ type Collector struct {
 func InsertCollector(newCollector Collector) error {
 	client, err := conect()
 	if err != nil {
-		return err
+		return fmt.Errorf("connect error: %q", err)
 	}
 
 	collectorC := client.Database(database).Collection(collectorCollection)
@@ -50,7 +50,7 @@ func InsertCollector(newCollector Collector) error {
 
 	err = disconect(client)
 	if err != nil {
-		return err
+		return fmt.Errorf("disconect error: %q", err)
 	}
 
 	return nil
