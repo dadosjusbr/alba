@@ -2,11 +2,8 @@ package storage
 
 import (
 	"context"
-<<<<<<< HEAD
 	"encoding/json"
-=======
 	"errors"
->>>>>>> 2aaf515e3c4907754b100b3cfc4b9c2fd57d286c
 	"fmt"
 	"os"
 	"time"
