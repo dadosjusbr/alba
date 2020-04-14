@@ -39,7 +39,10 @@ func InsertCollector(newCollector Collector) error {
 	}
 
 	collectorC := client.Database(database).Collection(collectorCollection)
-	setIndexesCollector(collectorC)
+	if collectorC == nil {
+		return fmt.Errorf("error in retrive collection")
+	}
+
 	_, err = collectorC.InsertOne(context.TODO(), newCollector)
 	if err != nil {
 		return fmt.Errorf("insert error: %q", err)
@@ -48,27 +51,6 @@ func InsertCollector(newCollector Collector) error {
 	err = disconect(client)
 	if err != nil {
 		return fmt.Errorf("disconect error: %q", err)
-	}
-
-	return nil
-}
-
-func setIndexesCollector(collectorC *mongo.Collection) error {
-	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
-	indexes := []mongo.IndexModel{
-		{
-			Keys:    bsonx.Doc{{Key: "path", Value: bsonx.Int32(1)}},
-			Options: options.Index().SetUnique(true),
-		},
-		{
-			Keys:    bsonx.Doc{{Key: "id", Value: bsonx.Int32(1)}},
-			Options: options.Index().SetUnique(true),
-		},
-	}
-
-	_, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts)
-	if err != nil {
-		return fmt.Errorf("create index error: %q", err)
 	}
 
 	return nil
@@ -176,8 +158,56 @@ func conect() (*mongo.Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error trying to connect:%q", err)
 	}
+	//Check if alba database exist
+	results, err := client.ListDatabaseNames(context.TODO(), bson.D{{Key: "name", Value: database}})
+	if err != nil {
+		return nil, fmt.Errorf("error when listing database names: %q", err)
+	}
+
+	if len(results) == 0 { //First executition for alba database
+		err := setupDB(client)
+		if err != nil {
+			return nil, fmt.Errorf("setup database error: %q", err)
+		}
+	}
 
 	return client, nil
+}
+
+//setupDB creates the collections and indexes
+func setupDB(client *mongo.Client) error {
+	collectorC := client.Database(database).Collection(collectorCollection)
+	if collectorC == nil {
+		return fmt.Errorf("error in create collection: %q", collectorCollection)
+	}
+
+	err := setIndexesCollector(collectorC)
+	if err != nil {
+		return fmt.Errorf("set indexes error in collection: %q", collectorCollection)
+	}
+
+	return nil
+}
+
+func setIndexesCollector(collectorC *mongo.Collection) error {
+	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	indexes := []mongo.IndexModel{
+		{
+			Keys:    bsonx.Doc{{Key: "path", Value: bsonx.Int32(1)}},
+			Options: options.Index().SetUnique(true),
+		},
+		{
+			Keys:    bsonx.Doc{{Key: "id", Value: bsonx.Int32(1)}},
+			Options: options.Index().SetUnique(true),
+		},
+	}
+
+	_, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts)
+	if err != nil {
+		return fmt.Errorf("create index error: %q", err)
+	}
+
+	return nil
 }
 
 func disconect(client *mongo.Client) error {
