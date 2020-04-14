@@ -19,9 +19,8 @@ func main() {
 	e := echo.New()
 
 	e.GET("/alba", index)
-	e.GET("/alba/api/coletores", viewAllCollectors)
-	e.GET("/alba/api/coletores/:id", viewCollectorByID)
-	e.GET("/alba/api/coletores/path", viewCollectorByPath)
+	e.GET("/alba/api/coletores", viewAPIAllCollectors)
+	e.GET("/alba/api/coletores/execucoes/:id", viewAPIExecutionsByID)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -31,8 +30,8 @@ func index(c echo.Context) error {
 	return c.String(http.StatusOK, "HTML com lista dos coletores")
 }
 
-//e.GET("/alba/api/coletores", viewAllCollectors)
-func viewAllCollectors(c echo.Context) error {
+//e.GET("/alba/api/coletores", viewAPIAllCollectors)
+func viewAPIAllCollectors(c echo.Context) error {
 	result, err := storage.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
@@ -45,32 +44,10 @@ func viewAllCollectors(c echo.Context) error {
 	return c.JSONBlob(http.StatusOK, result)
 }
 
-//e.GET("/alba/api/coletores/:id", viewCollectorByID)
-func viewCollectorByID(c echo.Context) error {
+//e.GET("/alba/api/coletores/execucoes/:id", viewAPIExecutionsByID)
+func viewAPIExecutionsByID(c echo.Context) error {
 	id := c.Param("id")
-	result, err := storage.GetCollectorByID(id)
-	if err != nil {
-		c.Logger().Error(err)
-		return echo.ErrInternalServerError
-	}
-	if result == nil {
-		return c.JSON(http.StatusOK, Message{msgNoResults})
-	}
+	msg := "Lista de execuções " + id
 
-	return c.JSONBlob(http.StatusOK, result)
-}
-
-//e.GET("/alba/api/coletores/path", viewCollectorByPath)
-func viewCollectorByPath(c echo.Context) error {
-	path := c.QueryParam("path")
-	result, err := storage.GetCollectorByPath(path)
-	if err != nil {
-		c.Logger().Error(err)
-		return echo.ErrInternalServerError
-	}
-	if result == nil {
-		return c.JSON(http.StatusOK, Message{msgNoResults})
-	}
-
-	return c.JSONBlob(http.StatusOK, result)
+	return c.JSON(http.StatusOK, Message{msg})
 }
