@@ -31,7 +31,7 @@ type Collector struct {
 	LimitYearBackward  int       `bson:"limit-year-backward, omitempty" json:"limit-year-backward"`   // The limit year until which the collector must be executed in its historical execution.
 }
 
-// InsertCollector insert an collector array
+// InsertCollector insert a collector
 func InsertCollector(newCollector Collector) error {
 	client, err := conect()
 	if err != nil {
@@ -104,33 +104,6 @@ func GetCollectorByID(id string) ([]byte, error) {
 
 	collectorC := client.Database(database).Collection(collectorCollection)
 	err = collectorC.FindOne(context.TODO(), bson.D{{Key: "id", Value: id}}).Decode(&collector)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("Find error: %q", err)
-	}
-
-	disconect := disconect(client)
-	if disconect != nil {
-		return nil, fmt.Errorf("disconect error: %q", disconect)
-	}
-
-	collectorJSON, _ := json.Marshal(collector)
-	return collectorJSON, nil
-}
-
-// GetCollectorByPath find and return a collector by path
-func GetCollectorByPath(path string) ([]byte, error) {
-	var collector Collector
-
-	client, err := conect()
-	if err != nil {
-		return nil, fmt.Errorf("connect error: %q", err)
-	}
-
-	collectorC := client.Database(database).Collection(collectorCollection)
-	err = collectorC.FindOne(context.TODO(), bson.D{{Key: "path", Value: path}}).Decode(&collector)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, nil
