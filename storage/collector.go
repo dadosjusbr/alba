@@ -31,23 +31,109 @@ type Collector struct {
 	LimitYearBackward  int       `bson:"limit-year-backward, omitempty" json:"limit-year-backward"`   // The limit year until which the collector must be executed in its historical execution.
 }
 
-// InsertCollector insert an collector array
+// InsertCollector insert a collector
 func InsertCollector(newCollector Collector) error {
-	client, err := conect()
+	client, err := connect()
 	if err != nil {
 		return fmt.Errorf("connect error: %q", err)
 	}
 
 	collectorC := client.Database(database).Collection(collectorCollection)
-	setIndexesCollector(collectorC)
+	if collectorC == nil {
+		return fmt.Errorf("error in retrive collection")
+	}
+
 	_, err = collectorC.InsertOne(context.TODO(), newCollector)
 	if err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
-	err = disconect(client)
+	err = disconnect(client)
 	if err != nil {
-		return fmt.Errorf("disconect error: %q", err)
+		return fmt.Errorf("disconnect error: %q", err)
+	}
+
+	return nil
+}
+
+// GetCollectors return all collectors in the database
+func GetCollectors() ([]byte, error) {
+	var collectors []Collector
+
+	client, err := connect()
+	if err != nil {
+		return nil, fmt.Errorf("connect error: %q", err)
+	}
+
+	collectorC := client.Database(database).Collection(collectorCollection)
+	itens, err := collectorC.Find(context.TODO(), bson.D{{}})
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("Find error: %q", err)
+	}
+
+	for itens.Next(context.Background()) {
+		var item Collector
+		err := itens.Decode(&item)
+		if err != nil {
+			return nil, fmt.Errorf("decode error in collector: %q", err)
+		}
+		collectors = append(collectors, item)
+	}
+	itens.Close(context.Background())
+
+	err = disconnect(client)
+	if err != nil {
+		return nil, fmt.Errorf("disconnect error: %q", err)
+	}
+
+	collectorsJSON, err := json.Marshal(collectors)
+	if err != nil {
+		return nil, fmt.Errorf("json encodind error: %q", err)
+	}
+
+	return collectorsJSON, nil
+}
+
+func connect() (*mongo.Client, error) {
+	uri := os.Getenv("MONGODB")
+	if uri == "" {
+		return nil, fmt.Errorf("error trying get environment variable:%q", errors.New("$MONGODB is empty"))
+	}
+
+	clientOptions := options.Client().ApplyURI(uri)
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		return nil, fmt.Errorf("error trying to connect:%q", err)
+	}
+	//Check if alba database exist
+	results, err := client.ListDatabaseNames(context.TODO(), bson.D{{Key: "name", Value: database}})
+	if err != nil {
+		return nil, fmt.Errorf("error when listing database names: %q", err)
+	}
+
+	if len(results) == 0 { //First executition for alba database and setup
+		err := setupDB(client)
+		if err != nil {
+			return nil, fmt.Errorf("setup database error: %q", err)
+		}
+	}
+
+	return client, nil
+}
+
+//setupDB creates the collections and indexes
+func setupDB(client *mongo.Client) error {
+	collectorC := client.Database(database).Collection(collectorCollection)
+	if collectorC == nil {
+		return fmt.Errorf("error in create collection: %q", collectorCollection)
+	}
+
+	err := setIndexesCollector(collectorC)
+	if err != nil {
+		return fmt.Errorf("set indexes error in collection: %q", collectorCollection)
 	}
 
 	return nil
@@ -74,113 +160,7 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 	return nil
 }
 
-// GetCollectors return all collectors in the database
-func GetCollectors() ([]byte, error) {
-	var collectors []Collector
-
-	client, err := conect()
-	if err != nil {
-		return nil, fmt.Errorf("connect error: %q", err)
-	}
-
-	collectorC := client.Database(database).Collection(collectorCollection)
-	itens, err := collectorC.Find(context.TODO(), bson.D{{}})
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("Find error: %q", err)
-	}
-
-	for itens.Next(context.TODO()) {
-		var item Collector
-		err := itens.Decode(&item)
-		if err != nil {
-			return nil, fmt.Errorf("decode error in collector: %q", err)
-		}
-		collectors = append(collectors, item)
-	}
-	itens.Close(context.TODO())
-
-	disconect := disconect(client)
-	if disconect != nil {
-		return nil, fmt.Errorf("disconect error: %q", disconect)
-	}
-
-	collectorsJSON, _ := json.Marshal(collectors)
-	return collectorsJSON, nil
-}
-
-// GetCollectorByID find and return a collector by id
-func GetCollectorByID(id string) ([]byte, error) {
-	var collector Collector
-
-	client, err := conect()
-	if err != nil {
-		return nil, fmt.Errorf("connect error: %q", err)
-	}
-
-	collectorC := client.Database(database).Collection(collectorCollection)
-	err = collectorC.FindOne(context.TODO(), bson.D{{Key: "id", Value: id}}).Decode(&collector)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("Find error: %q", err)
-	}
-
-	disconect := disconect(client)
-	if disconect != nil {
-		return nil, fmt.Errorf("disconect error: %q", disconect)
-	}
-
-	collectorJSON, _ := json.Marshal(collector)
-	return collectorJSON, nil
-}
-
-// GetCollectorByPath find and return a collector by path
-func GetCollectorByPath(path string) ([]byte, error) {
-	var collector Collector
-
-	client, err := conect()
-	if err != nil {
-		return nil, fmt.Errorf("connect error: %q", err)
-	}
-
-	collectorC := client.Database(database).Collection(collectorCollection)
-	err = collectorC.FindOne(context.TODO(), bson.D{{Key: "path", Value: path}}).Decode(&collector)
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, fmt.Errorf("Find error: %q", err)
-	}
-
-	disconect := disconect(client)
-	if disconect != nil {
-		return nil, fmt.Errorf("disconect error: %q", disconect)
-	}
-
-	collectorJSON, _ := json.Marshal(collector)
-	return collectorJSON, nil
-}
-
-func conect() (*mongo.Client, error) {
-	uri := os.Getenv("MONGODB")
-	if uri == "" {
-		return nil, fmt.Errorf("error trying get environment variable:%q", errors.New("$MONGODB is empty"))
-	}
-
-	clientOptions := options.Client().ApplyURI(uri)
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		return nil, fmt.Errorf("error trying to connect:%q", err)
-	}
-
-	return client, nil
-}
-
-func disconect(client *mongo.Client) error {
+func disconnect(client *mongo.Client) error {
 	err := client.Disconnect(context.TODO())
 	if err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)

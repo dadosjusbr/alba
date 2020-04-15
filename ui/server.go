@@ -55,7 +55,7 @@ func main() {
 	e.GET("/alba", index)
 	e.GET("/alba/:id", viewExectuionByID)
 	e.GET("/alba/api/coletores", viewAPIAllCollectors)
-	e.GET("/alba/api/coletores/:id", viewAPIExecutionByID)
+	e.GET("/alba/api/coletores/execucoes/:id", viewAPIExecutionsByID)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -119,8 +119,8 @@ func viewAPIAllCollectors(c echo.Context) error {
 }
 
 //TODO: Implementar a busca da informação das execuções
-//e.GET("/alba/api/coletores/:id", viewAPIExecutionByID)
-func viewAPIExecutionByID(c echo.Context) error {
+//e.GET("/alba/api/coletores/execucoes/:id", viewAPIExecutionsByID)
+func viewAPIExecutionsByID(c echo.Context) error {
 	data := ExecutionDetails{
 		Entity: "Tribunal Regional do Trabalho 13ª Região",
 		Executions: []Execution{
