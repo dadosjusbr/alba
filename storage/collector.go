@@ -48,8 +48,7 @@ func InsertCollector(newCollector Collector) error {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
-	err = disconnect(client)
-	if err != nil {
+	if err = disconnect(client); err != nil {
 		return fmt.Errorf("disconnect error: %q", err)
 	}
 
