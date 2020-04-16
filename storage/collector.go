@@ -67,7 +67,7 @@ func GetCollectors() ([]Collector, error) {
 	itens, err := collectorC.Find(context.TODO(), bson.D{{}})
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, nil
+			return []Collector{}, nil
 		}
 		return nil, fmt.Errorf("Find error: %q", err)
 	}
