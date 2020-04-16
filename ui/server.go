@@ -41,7 +41,7 @@ func viewAPIAllCollectors(c echo.Context) error {
 		return c.JSON(http.StatusOK, Message{msgNoResults})
 	}
 
-	return c.JSONBlob(http.StatusOK, result)
+	return c.JSON(http.StatusOK, result)
 }
 
 //e.GET("/alba/api/coletores/execucoes/:id", viewAPIExecutionsByID)
