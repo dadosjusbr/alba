@@ -38,7 +38,7 @@ func viewAPIAllCollectors(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 	if result == nil {
-		return c.JSON(http.StatusOK, Message{msgNoResults})
+		return echo.ErrNotFound
 	}
 
 	return c.JSON(http.StatusOK, result)
