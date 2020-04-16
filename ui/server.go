@@ -68,7 +68,7 @@ func index(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 	//TODO: Retornar página hmtl sem resultados
-	if result == nil {
+	if len(result) == 0 {
 		return c.JSON(http.StatusOK, Message{msgNoResults})
 	}
 
