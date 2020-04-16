@@ -83,7 +83,7 @@ func GetCollectors() ([]Collector, error) {
 	itens.Close(context.Background())
 
 	if err = disconnect(client); err != nil {
-		return nil, fmt.Errorf("disconnect error: %q", err)
+		return nil, fmt.Errorf("error getting collectors: Disconnect: %q", err)
 	}
 	return collectors, nil
 }
