@@ -55,7 +55,7 @@ func InsertCollector(newCollector Collector) error {
 }
 
 // GetCollectors return all collectors in the database
-func GetCollectors() ([]byte, error) {
+func GetCollectors() ([]Collector, error) {
 	var collectors []Collector
 
 	client, err := connect()
