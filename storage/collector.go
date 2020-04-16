@@ -86,13 +86,7 @@ func GetCollectors() ([]Collector, error) {
 	if err != nil {
 		return nil, fmt.Errorf("disconnect error: %q", err)
 	}
-
-	collectorsJSON, err := json.Marshal(collectors)
-	if err != nil {
-		return nil, fmt.Errorf("json encodind error: %q", err)
-	}
-
-	return collectorsJSON, nil
+	return collectors, nil
 }
 
 func connect() (*mongo.Client, error) {
