@@ -69,7 +69,7 @@ func index(c echo.Context) error {
 	}
 	//TODO: Retornar página hmtl sem resultados
 	if len(result) == 0 {
-		return c.JSON(http.StatusOK, Message{msgNoResults})
+		return c.String(http.StatusOK, "No results")
 	}
 
 	collectors := []storage.Collector{}
