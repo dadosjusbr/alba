@@ -43,8 +43,7 @@ func InsertCollector(newCollector Collector) error {
 		return fmt.Errorf("error in retrive collection")
 	}
 
-	_, err = collectorC.InsertOne(context.TODO(), newCollector)
-	if err != nil {
+	if _, err = collectorC.InsertOne(context.TODO(), newCollector); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
