@@ -69,7 +69,7 @@ func GetCollectors() ([]Collector, error) {
 		if err == mongo.ErrNoDocuments {
 			return []Collector{}, nil
 		}
-		return nil, fmt.Errorf("Find error: %q", err)
+		return nil, fmt.Errorf("error getting collectors. Find error: %q", err)
 	}
 
 	for itens.Next(context.Background()) {
