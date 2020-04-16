@@ -74,8 +74,7 @@ func GetCollectors() ([]Collector, error) {
 
 	for itens.Next(context.Background()) {
 		var item Collector
-		err := itens.Decode(&item)
-		if err != nil {
+		if err := itens.Decode(&item); err != nil {
 			return nil, fmt.Errorf("error getting collectors. Decode error: %q", err)
 		}
 		collectors = append(collectors, item)
