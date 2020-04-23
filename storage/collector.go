@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -39,10 +38,6 @@ func InsertCollector(newCollector Collector) error {
 	}
 
 	collectorC := client.Database(database).Collection(collectorCollection)
-	if collectorC == nil {
-		return fmt.Errorf("error in retrive collection")
-	}
-
 	if _, err = collectorC.InsertOne(context.TODO(), newCollector); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
@@ -104,29 +99,14 @@ func connect() (*mongo.Client, error) {
 		return nil, fmt.Errorf("error when listing database names: %q", err)
 	}
 
-	if len(results) == 0 { //First executition for alba database and setup
-		err := setupDB(client)
-		if err != nil {
-			return nil, fmt.Errorf("setup database error: %q", err)
+	if len(results) == 0 { //First execution for alba database and setup
+		collectorC := client.Database(database).Collection(collectorCollection)
+		if err := setIndexesCollector(collectorC); err != nil {
+			return nil, fmt.Errorf("setup error. set indexes error in collection: %q", collectorCollection)
 		}
 	}
 
 	return client, nil
-}
-
-//setupDB creates the collections and indexes
-func setupDB(client *mongo.Client) error {
-	collectorC := client.Database(database).Collection(collectorCollection)
-	if collectorC == nil {
-		return fmt.Errorf("error in create collection: %q", collectorCollection)
-	}
-
-	err := setIndexesCollector(collectorC)
-	if err != nil {
-		return fmt.Errorf("set indexes error in collection: %q", collectorCollection)
-	}
-
-	return nil
 }
 
 func setIndexesCollector(collectorC *mongo.Collection) error {
@@ -142,8 +122,7 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 		},
 	}
 
-	_, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts)
-	if err != nil {
+	if _, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts); err != nil {
 		return fmt.Errorf("create index error: %q", err)
 	}
 
@@ -151,8 +130,7 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 }
 
 func disconnect(client *mongo.Client) error {
-	err := client.Disconnect(context.TODO())
-	if err != nil {
+	if err := client.Disconnect(context.TODO()); err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)
 	}
 
