@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -39,17 +38,11 @@ func InsertCollector(newCollector Collector) error {
 	}
 
 	collectorC := client.Database(database).Collection(collectorCollection)
-	if collectorC == nil {
-		return fmt.Errorf("error in retrive collection")
-	}
-
-	_, err = collectorC.InsertOne(context.TODO(), newCollector)
-	if err != nil {
+	if _, err = collectorC.InsertOne(context.TODO(), newCollector); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
-	err = disconnect(client)
-	if err != nil {
+	if err = disconnect(client); err != nil {
 		return fmt.Errorf("disconnect error: %q", err)
 	}
 
@@ -57,7 +50,7 @@ func InsertCollector(newCollector Collector) error {
 }
 
 // GetCollectors return all collectors in the database
-func GetCollectors() ([]byte, error) {
+func GetCollectors() ([]Collector, error) {
 	var collectors []Collector
 
 	client, err := connect()
@@ -69,32 +62,24 @@ func GetCollectors() ([]byte, error) {
 	itens, err := collectorC.Find(context.TODO(), bson.D{{}})
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil, nil
+			return []Collector{}, nil
 		}
-		return nil, fmt.Errorf("Find error: %q", err)
+		return nil, fmt.Errorf("error getting collectors. Find error: %q", err)
 	}
 
 	for itens.Next(context.Background()) {
 		var item Collector
-		err := itens.Decode(&item)
-		if err != nil {
-			return nil, fmt.Errorf("decode error in collector: %q", err)
+		if err := itens.Decode(&item); err != nil {
+			return nil, fmt.Errorf("error getting collectors. Decode error: %q", err)
 		}
 		collectors = append(collectors, item)
 	}
 	itens.Close(context.Background())
 
-	err = disconnect(client)
-	if err != nil {
-		return nil, fmt.Errorf("disconnect error: %q", err)
+	if err = disconnect(client); err != nil {
+		return nil, fmt.Errorf("error getting collectors: Disconnect: %q", err)
 	}
-
-	collectorsJSON, err := json.Marshal(collectors)
-	if err != nil {
-		return nil, fmt.Errorf("json encodind error: %q", err)
-	}
-
-	return collectorsJSON, nil
+	return collectors, nil
 }
 
 func connect() (*mongo.Client, error) {
@@ -114,29 +99,14 @@ func connect() (*mongo.Client, error) {
 		return nil, fmt.Errorf("error when listing database names: %q", err)
 	}
 
-	if len(results) == 0 { //First executition for alba database and setup
-		err := setupDB(client)
-		if err != nil {
-			return nil, fmt.Errorf("setup database error: %q", err)
+	if len(results) == 0 { //First execution for alba database and setup
+		collectorC := client.Database(database).Collection(collectorCollection)
+		if err := setIndexesCollector(collectorC); err != nil {
+			return nil, fmt.Errorf("setup error. set indexes error in collection: %q", collectorCollection)
 		}
 	}
 
 	return client, nil
-}
-
-//setupDB creates the collections and indexes
-func setupDB(client *mongo.Client) error {
-	collectorC := client.Database(database).Collection(collectorCollection)
-	if collectorC == nil {
-		return fmt.Errorf("error in create collection: %q", collectorCollection)
-	}
-
-	err := setIndexesCollector(collectorC)
-	if err != nil {
-		return fmt.Errorf("set indexes error in collection: %q", collectorCollection)
-	}
-
-	return nil
 }
 
 func setIndexesCollector(collectorC *mongo.Collection) error {
@@ -152,8 +122,7 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 		},
 	}
 
-	_, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts)
-	if err != nil {
+	if _, err := collectorC.Indexes().CreateMany(context.Background(), indexes, opts); err != nil {
 		return fmt.Errorf("create index error: %q", err)
 	}
 
@@ -161,8 +130,7 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 }
 
 func disconnect(client *mongo.Client) error {
-	err := client.Disconnect(context.TODO())
-	if err != nil {
+	if err := client.Disconnect(context.TODO()); err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)
 	}
 

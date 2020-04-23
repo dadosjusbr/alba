@@ -112,10 +112,10 @@ func viewAPIAllCollectors(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 	if result == nil {
-		return c.JSON(http.StatusOK, Message{msgNoResults})
+		return echo.ErrNotFound
 	}
 
-	return c.JSONBlob(http.StatusOK, result)
+	return c.JSON(http.StatusOK, result)
 }
 
 //TODO: Implementar a busca da informação das execuções
