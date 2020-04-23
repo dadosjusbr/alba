@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"html/template"
 	"io"
 	"net/http"
@@ -11,12 +10,14 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-//Message represents a information for the user
-type Message struct {
-	Message string `json:"message"`
+//NotFound information for the user when their search has no results
+type NotFound struct {
+	Message          string `json:"message"`
+	DocumentationURL string `json:"docmentation_url"`
 }
 
-const msgNoResults = "No results"
+const msgNotFound = "Not found"
+const docmentationURL = "https://github.com/dadosjusbr/alba/wiki/API"
 
 //Template represents the html/template
 type Template struct {
@@ -62,18 +63,16 @@ func main() {
 
 //e.GET("/alba", index)
 func index(c echo.Context) error {
-	result, err := storage.GetCollectors()
+	results, err := storage.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
 	//TODO: Retornar página hmtl sem resultados
-	if len(result) == 0 {
+	if len(results) == 0 {
 		return c.String(http.StatusOK, "No results")
 	}
 
-	collectors := []storage.Collector{}
-	err = json.Unmarshal(result, &collectors)
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
@@ -82,7 +81,7 @@ func index(c echo.Context) error {
 	data := struct {
 		Collectors []storage.Collector
 	}{
-		collectors,
+		results,
 	}
 
 	return c.Render(http.StatusOK, "home.html", data)
@@ -91,8 +90,10 @@ func index(c echo.Context) error {
 //TODO: Implementar a busca da informação das execuções
 //e.GET("/alba/:id", viewExectuionByID)
 func viewExectuionByID(c echo.Context) error {
+	id := c.Param("id")
+
 	data := ExecutionDetails{
-		Entity: "Tribunal Regional do Trabalho 13ª Região",
+		Entity: id,
 		Executions: []Execution{
 			{Date: "10/01/2020", Status: "Finalizado com sucesso", Result: "link"},
 			{Date: "10/02/2020", Status: "Finalizado com sucesso", Result: "link"},
@@ -106,23 +107,25 @@ func viewExectuionByID(c echo.Context) error {
 
 //e.GET("/alba/api/coletores", viewAPIAllCollectors)
 func viewAPIAllCollectors(c echo.Context) error {
-	result, err := storage.GetCollectors()
+	results, err := storage.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	if result == nil {
-		return echo.ErrNotFound
+	if len(results) == 0 {
+		return c.JSON(http.StatusOK, NotFound{msgNotFound, docmentationURL})
 	}
 
-	return c.JSON(http.StatusOK, result)
+	return c.JSON(http.StatusOK, results)
 }
 
 //TODO: Implementar a busca da informação das execuções
 //e.GET("/alba/api/coletores/execucoes/:id", viewAPIExecutionsByID)
 func viewAPIExecutionsByID(c echo.Context) error {
+	id := c.Param("id")
+
 	data := ExecutionDetails{
-		Entity: "Tribunal Regional do Trabalho 13ª Região",
+		Entity: id,
 		Executions: []Execution{
 			{Date: "10/01/2020", Status: "Finalizado com sucesso", Result: "link"},
 			{Date: "10/02/2020", Status: "Finalizado com sucesso", Result: "link"},
