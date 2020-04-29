@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"net/http"
 	"testing"
 	"time"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/steinfletcher/apitest"
-	jsonpath "github.com/steinfletcher/apitest-jsonpath"
 )
 
 var resultDB []storage.Collector = []storage.Collector{
@@ -35,29 +35,84 @@ func (fake fakeGetterCollector) GetCollectors() ([]storage.Collector, error) {
 }
 
 func addFakeGetCollector(c echo.Context) error {
-	return getCollectors(c, fakeGetterCollector{})
+	return getCollector(c, fakeGetterCollector{})
+}
+
+type emptyGetterCollector struct {
+}
+
+func (empty emptyGetterCollector) GetCollectors() ([]storage.Collector, error) {
+	return []storage.Collector{}, nil
+}
+
+func addNilGetCollector(c echo.Context) error {
+	return getCollector(c, emptyGetterCollector{})
+}
+
+type errGetterCollector struct {
+}
+
+func (fake errGetterCollector) GetCollectors() ([]storage.Collector, error) {
+	return []storage.Collector{}, errors.New("get collector: internal server error")
+}
+
+func addErrGetCollector(c echo.Context) error {
+	return getCollector(c, errGetterCollector{})
 }
 
 type application struct {
 	app *echo.Echo
 }
 
-func newApp() *application {
+func newAppTest() *application {
 	app := echo.New()
-
-	app.GET("/teste", addFakeGetCollector)
+	app.GET("/alba/api/coletores", addFakeGetCollector)
 
 	return &application{
 		app: app,
 	}
 }
 
-func TestGetCollectors(t *testing.T) {
+func TestGetCollector_NotFound(t *testing.T) {
 	apitest.New().
-		Handler(newApp().app).
-		Get("/teste").
+		Handler(newAppTest().app).
+		Get("/alba/api/coletores/").
 		Expect(t).
-		Assert(jsonpath.Equal(`{"city":"João Pessoa", "entity":"Tribunal Regional do Trabalho 13ª Região", "frequency":30, "fu":"PB", "id":"trt13", "limit-month-backward":2, "limit-year-backward":2018, "path":"github.com/dadosjusbr/coletores/trt13", "start-day":5, "update-date":"2009-10-17T20:34:58.651387237Z"}`)).
+		Status(http.StatusNotFound).
+		End()
+}
+
+func TestGetCollector_Sucess(t *testing.T) {
+	apitest.New().
+		Handler(newAppTest().app).
+		Get("/alba/api/coletores").
+		Expect(t).
+		Body(`[{"city":"João Pessoa", "entity":"Tribunal Regional do Trabalho 13ª Região", "frequency":30, "fu":"PB", "id":"trt13", "limit-month-backward":2, "limit-year-backward":2018, "path":"github.com/dadosjusbr/coletores/trt13", "start-day":5, "update-date":"2009-10-17T20:34:58.651387237Z"}]`).
 		Status(http.StatusOK).
+		End()
+}
+
+func TestGetCollector_Documentation(t *testing.T) {
+	app := echo.New()
+	app.GET("/alba/api/coletores", addNilGetCollector)
+
+	apitest.New().
+		Handler(app).
+		Get("/alba/api/coletores").
+		Expect(t).
+		Body("{\"message\":\"" + msgNotFound + "\", \"docmentation_url\":\"" + docmentationURL + "\"}").
+		Status(http.StatusOK).
+		End()
+}
+
+func TestGetCollector_InternalServerError(t *testing.T) {
+	app := echo.New()
+	app.GET("/alba/api/coletores", addErrGetCollector)
+
+	apitest.New().
+		Handler(app).
+		Get("/alba/api/coletores").
+		Expect(t).
+		Status(http.StatusInternalServerError).
 		End()
 }
