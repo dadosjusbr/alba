@@ -19,12 +19,12 @@ func (prod prodGetCollector) GetCollectors() ([]storage.Collector, error) {
 	return storage.GetCollectors()
 }
 
-//AddGetCollector set prodGetCollector
+//AddGetCollector set prodGetCollector.
 func AddGetCollector(c echo.Context) error {
 	return getCollector(c, prodGetCollector{})
 }
 
-//NotFound information for the user when their search has no results
+//NotFound information for the user when their search has no results.
 type NotFound struct {
 	Message          string `json:"message"`
 	DocumentationURL string `json:"docmentation_url"`
@@ -40,7 +40,7 @@ type Execution struct {
 	Result string
 }
 
-//ExecutionDetails represents the details of the execution from collector
+//ExecutionDetails represents the details of the execution from collector.
 type ExecutionDetails struct {
 	Entity     string
 	Executions []Execution
@@ -59,7 +59,7 @@ func getCollector(c echo.Context, getter getterCollector) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-//ExecutionByID returns all executions by collector ID. e.GET("/alba/api/coletores/execucoes/:id", ExecutionsByID)
+//ExecutionByID returns all executions by collector ID.
 func ExecutionByID(c echo.Context) error {
 	//Mockup
 	data := ExecutionDetails{
