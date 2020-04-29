@@ -8,6 +8,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+//URLCollectors represents the collectors url
+const URLCollectors = "/alba/api/collectors"
+
+//URLExecutions represents the executions url
+const URLExecutions = "/alba/api/collectors/executions/:id"
+
 type getterCollector interface {
 	GetCollectors() ([]storage.Collector, error)
 }

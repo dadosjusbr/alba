@@ -38,8 +38,8 @@ func newApp() *application {
 
 	app.GET("/alba", index)
 	app.GET("/alba/:id", viewExecutionsByID)
-	app.GET("/alba/api/collectors", api.AddGetCollector)
-	app.GET("/alba/api/collectors/executions/:id", api.ExecutionByID)
+	app.GET(api.URLCollectors, api.AddGetCollector)
+	app.GET(api.URLExecutions, api.ExecutionByID)
 
 	return &application{
 		app: app,

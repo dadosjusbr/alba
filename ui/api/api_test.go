@@ -66,7 +66,7 @@ type application struct {
 
 func newAppTest() *application {
 	app := echo.New()
-	app.GET("/alba/api/coletores", addFakeGetCollector)
+	app.GET(URLCollectors, addFakeGetCollector)
 
 	return &application{
 		app: app,
@@ -76,7 +76,7 @@ func newAppTest() *application {
 func TestGetCollector_NotFound(t *testing.T) {
 	apitest.New().
 		Handler(newAppTest().app).
-		Get("/alba/api/coletores/").
+		Get("/alba/api/collectors/").
 		Expect(t).
 		Status(http.StatusNotFound).
 		End()
@@ -85,7 +85,7 @@ func TestGetCollector_NotFound(t *testing.T) {
 func TestGetCollector_Sucess(t *testing.T) {
 	apitest.New().
 		Handler(newAppTest().app).
-		Get("/alba/api/coletores").
+		Get(URLCollectors).
 		Expect(t).
 		Body(`[{"city":"João Pessoa", "entity":"Tribunal Regional do Trabalho 13ª Região", "frequency":30, "fu":"PB", "id":"trt13", "limit-month-backward":2, "limit-year-backward":2018, "path":"github.com/dadosjusbr/coletores/trt13", "start-day":5, "update-date":"2009-10-17T20:34:58.651387237Z"}]`).
 		Status(http.StatusOK).
@@ -94,11 +94,11 @@ func TestGetCollector_Sucess(t *testing.T) {
 
 func TestGetCollector_Documentation(t *testing.T) {
 	app := echo.New()
-	app.GET("/alba/api/coletores", addNilGetCollector)
+	app.GET(URLCollectors, addNilGetCollector)
 
 	apitest.New().
 		Handler(app).
-		Get("/alba/api/coletores").
+		Get(URLCollectors).
 		Expect(t).
 		Body("{\"message\":\"" + msgNotFound + "\", \"docmentation_url\":\"" + docmentationURL + "\"}").
 		Status(http.StatusOK).
@@ -107,11 +107,11 @@ func TestGetCollector_Documentation(t *testing.T) {
 
 func TestGetCollector_InternalServerError(t *testing.T) {
 	app := echo.New()
-	app.GET("/alba/api/coletores", addErrGetCollector)
+	app.GET(URLCollectors, addErrGetCollector)
 
 	apitest.New().
 		Handler(app).
-		Get("/alba/api/coletores").
+		Get(URLCollectors).
 		Expect(t).
 		Status(http.StatusInternalServerError).
 		End()
