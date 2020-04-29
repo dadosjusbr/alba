@@ -21,23 +21,37 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 	return t.templates.ExecuteTemplate(w, name, data)
 }
 
-func main() {
-	e := echo.New()
+type application struct {
+	app *echo.Echo
+}
+
+func newApp() *application {
+	app := echo.New()
 
 	templates := &Template{
 		templates: template.Must(template.ParseGlob("templates/*.html")),
 	}
 
-	e.Static("/static", "templates/assets")
+	app.Static("/static", "templates/assets")
 
-	e.Renderer = templates
+	app.Renderer = templates
 
-	e.GET("/alba", index)
-	e.GET("/alba/:id", viewExecutionsByID)
-	e.GET("/alba/api/coletores", api.GetCollectors)
-	e.GET("/alba/api/coletores/execucoes/:id", api.ExecutionsByID)
+	app.GET("/alba", index)
+	app.GET("/alba/:id", viewExecutionsByID)
+	app.GET("/alba/api/coletores", api.AddGetCollector)
+	app.GET("/alba/api/coletores/execucoes/:id", api.ExecutionByID)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	return &application{
+		app: app,
+	}
+}
+
+func (a *application) start() {
+	a.app.Logger.Fatal(a.app.Start(":8080"))
+}
+
+func main() {
+	newApp().start()
 }
 
 //e.GET("/alba", index)
