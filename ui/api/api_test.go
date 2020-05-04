@@ -27,37 +27,13 @@ var resultDB []storage.Collector = []storage.Collector{
 	},
 }
 
-type fakeGetterCollector struct {
+type fakeCollectorsGetter struct {
+	resp []storage.Collector
+	err  error
 }
 
-func (fake fakeGetterCollector) GetCollectors() ([]storage.Collector, error) {
-	return resultDB, nil
-}
-
-func addFakeGetCollector(c echo.Context) error {
-	return getCollector(c, fakeGetterCollector{})
-}
-
-type emptyGetterCollector struct {
-}
-
-func (empty emptyGetterCollector) GetCollectors() ([]storage.Collector, error) {
-	return []storage.Collector{}, nil
-}
-
-func addNilGetCollector(c echo.Context) error {
-	return getCollector(c, emptyGetterCollector{})
-}
-
-type errGetterCollector struct {
-}
-
-func (fake errGetterCollector) GetCollectors() ([]storage.Collector, error) {
-	return []storage.Collector{}, errors.New("get collector: internal server error")
-}
-
-func addErrGetCollector(c echo.Context) error {
-	return getCollector(c, errGetterCollector{})
+func (fake fakeCollectorsGetter) GetCollectors() ([]storage.Collector, error) {
+	return fake.resp, fake.err
 }
 
 type application struct {
@@ -66,14 +42,17 @@ type application struct {
 
 func newAppTest() *application {
 	app := echo.New()
-	app.GET(URLCollectors, addFakeGetCollector)
+	app.GET(CollectorsURL, func(c echo.Context) error {
+		//fake database result
+		return getCollectors(c, fakeCollectorsGetter{resultDB, nil})
+	})
 
 	return &application{
 		app: app,
 	}
 }
 
-func TestGetCollector_NotFound(t *testing.T) {
+func TestGetCollector_NotFoundURL(t *testing.T) {
 	apitest.New().
 		Handler(newAppTest().app).
 		Get("/alba/api/collectors/").
@@ -85,33 +64,53 @@ func TestGetCollector_NotFound(t *testing.T) {
 func TestGetCollector_Sucess(t *testing.T) {
 	apitest.New().
 		Handler(newAppTest().app).
-		Get(URLCollectors).
+		Get(CollectorsURL).
 		Expect(t).
 		Body(`[{"city":"João Pessoa", "entity":"Tribunal Regional do Trabalho 13ª Região", "frequency":30, "fu":"PB", "id":"trt13", "limit-month-backward":2, "limit-year-backward":2018, "path":"github.com/dadosjusbr/coletores/trt13", "start-day":5, "update-date":"2009-10-17T20:34:58.651387237Z"}]`).
 		Status(http.StatusOK).
 		End()
 }
 
-func TestGetCollector_Documentation(t *testing.T) {
+func TestGetCollector_I(t *testing.T) {
 	app := echo.New()
-	app.GET(URLCollectors, addNilGetCollector)
+	app.GET(CollectorsURL, func(c echo.Context) error {
+		//result is an empty list and the function raise an error
+		return getCollectors(c, fakeCollectorsGetter{[]storage.Collector{}, errors.New("get collector: internal server error")})
+	})
 
 	apitest.New().
 		Handler(app).
-		Get(URLCollectors).
+		Get(CollectorsURL).
 		Expect(t).
-		Body("{\"message\":\"" + msgNotFound + "\", \"docmentation_url\":\"" + docmentationURL + "\"}").
-		Status(http.StatusOK).
+		Status(http.StatusInternalServerError).
+		End()
+}
+
+func TestGetCollector_EmptyDB(t *testing.T) {
+	app := echo.New()
+	app.GET(CollectorsURL, func(c echo.Context) error {
+		//result is an empty list
+		return getCollectors(c, fakeCollectorsGetter{[]storage.Collector{}, nil})
+	})
+
+	apitest.New().
+		Handler(app).
+		Get(CollectorsURL).
+		Expect(t).
+		Status(http.StatusNotFound).
 		End()
 }
 
 func TestGetCollector_InternalServerError(t *testing.T) {
 	app := echo.New()
-	app.GET(URLCollectors, addErrGetCollector)
+	app.GET(CollectorsURL, func(c echo.Context) error {
+		//result is an empty list and the function raise an error
+		return getCollectors(c, fakeCollectorsGetter{[]storage.Collector{}, errors.New("get collector: internal server error")})
+	})
 
 	apitest.New().
 		Handler(app).
-		Get(URLCollectors).
+		Get(CollectorsURL).
 		Expect(t).
 		Status(http.StatusInternalServerError).
 		End()
