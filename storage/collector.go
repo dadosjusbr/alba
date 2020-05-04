@@ -2,9 +2,7 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -30,83 +28,42 @@ type Collector struct {
 	LimitYearBackward  int       `bson:"limit-year-backward, omitempty" json:"limit-year-backward"`   // The limit year until which the collector must be executed in its historical execution.
 }
 
-// InsertCollector insert a collector
-func InsertCollector(newCollector Collector) error {
-	client, err := connect()
-	if err != nil {
-		return fmt.Errorf("connect error: %q", err)
-	}
-
-	collectorC := client.Database(database).Collection(collectorCollection)
-	if _, err = collectorC.InsertOne(context.TODO(), newCollector); err != nil {
-		return fmt.Errorf("insert error: %q", err)
-	}
-
-	if err = disconnect(client); err != nil {
-		return fmt.Errorf("disconnect error: %q", err)
-	}
-
-	return nil
+//DBClient represents a mongodb client instance
+type DBClient struct {
+	mgoClient *mongo.Client
 }
 
-// GetCollectors return all collectors in the database
-func GetCollectors() ([]Collector, error) {
-	var collectors []Collector
-
-	client, err := connect()
+//NewClientDB return a DBCLient
+func NewClientDB(uri string) (*DBClient, error) {
+	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
-		return nil, fmt.Errorf("connect error: %q", err)
+		return nil, fmt.Errorf("new client error. error creating new client: %q", err)
 	}
-
-	collectorC := client.Database(database).Collection(collectorCollection)
-	itens, err := collectorC.Find(context.TODO(), bson.D{{}})
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return []Collector{}, nil
-		}
-		return nil, fmt.Errorf("error getting collectors. Find error: %q", err)
-	}
-
-	for itens.Next(context.Background()) {
-		var item Collector
-		if err := itens.Decode(&item); err != nil {
-			return nil, fmt.Errorf("error getting collectors. Decode error: %q", err)
-		}
-		collectors = append(collectors, item)
-	}
-	itens.Close(context.Background())
-
-	if err = disconnect(client); err != nil {
-		return nil, fmt.Errorf("error getting collectors: Disconnect: %q", err)
-	}
-	return collectors, nil
+	return &DBClient{mgoClient: client}, nil
 }
 
-func connect() (*mongo.Client, error) {
-	uri := os.Getenv("MONGODB")
-	if uri == "" {
-		return nil, fmt.Errorf("error trying get environment variable:%q", errors.New("$MONGODB is empty"))
+//Connect makes the connection to the database
+func (c *DBClient) Connect() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	if err := c.mgoClient.Connect(ctx); err != nil {
+		return fmt.Errorf("error trying to connect:%q", err)
 	}
 
-	clientOptions := options.Client().ApplyURI(uri)
-	client, err := mongo.Connect(context.TODO(), clientOptions)
-	if err != nil {
-		return nil, fmt.Errorf("error trying to connect:%q", err)
-	}
 	//Check if alba database exist
-	results, err := client.ListDatabaseNames(context.TODO(), bson.D{{Key: "name", Value: database}})
+	results, err := c.mgoClient.ListDatabaseNames(ctx, bson.D{{Key: "name", Value: database}})
 	if err != nil {
-		return nil, fmt.Errorf("error when listing database names: %q", err)
+		return fmt.Errorf("connect error. error when listing database names: %q", err)
 	}
 
 	if len(results) == 0 { //First execution for alba database and setup
-		collectorC := client.Database(database).Collection(collectorCollection)
-		if err := setIndexesCollector(collectorC); err != nil {
-			return nil, fmt.Errorf("setup error. set indexes error in collection: %q", collectorCollection)
+		collection := c.mgoClient.Database(database).Collection(collectorCollection)
+		if err := setIndexesCollector(collection); err != nil {
+			return fmt.Errorf("connect error. set indexes error in collection: %q", collectorCollection)
 		}
 	}
 
-	return client, nil
+	return nil
 }
 
 func setIndexesCollector(collectorC *mongo.Collection) error {
@@ -129,8 +86,44 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 	return nil
 }
 
-func disconnect(client *mongo.Client) error {
-	if err := client.Disconnect(context.TODO()); err != nil {
+//InsertCollector insert a collector
+func (c *DBClient) InsertCollector(newCollector Collector) error {
+	collection := c.mgoClient.Database(database).Collection(collectorCollection)
+	if _, err := collection.InsertOne(context.TODO(), newCollector); err != nil {
+		return fmt.Errorf("insert error: %q", err)
+	}
+
+	return nil
+}
+
+// GetCollectors return all collectors in the database
+func (c *DBClient) GetCollectors() ([]Collector, error) {
+	var collectors []Collector
+
+	collection := c.mgoClient.Database(database).Collection(collectorCollection)
+	itens, err := collection.Find(context.TODO(), bson.D{{}})
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []Collector{}, nil
+		}
+		return nil, fmt.Errorf("error getting collectors. Find error: %q", err)
+	}
+
+	for itens.Next(context.Background()) {
+		var item Collector
+		if err := itens.Decode(&item); err != nil {
+			return nil, fmt.Errorf("error getting collectors. Decode error: %q", err)
+		}
+		collectors = append(collectors, item)
+	}
+	itens.Close(context.Background())
+
+	return collectors, nil
+}
+
+//Disconnect makes the disconnection to the database
+func (c *DBClient) Disconnect() error {
+	if err := c.mgoClient.Disconnect(context.TODO()); err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)
 	}
 
