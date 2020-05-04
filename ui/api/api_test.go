@@ -71,21 +71,6 @@ func TestGetCollector_Sucess(t *testing.T) {
 		End()
 }
 
-func TestGetCollector_I(t *testing.T) {
-	app := echo.New()
-	app.GET(CollectorsURL, func(c echo.Context) error {
-		//result is an empty list and the function raise an error
-		return getCollectors(c, fakeCollectorsGetter{[]storage.Collector{}, errors.New("get collector: internal server error")})
-	})
-
-	apitest.New().
-		Handler(app).
-		Get(CollectorsURL).
-		Expect(t).
-		Status(http.StatusInternalServerError).
-		End()
-}
-
 func TestGetCollector_EmptyDB(t *testing.T) {
 	app := echo.New()
 	app.GET(CollectorsURL, func(c echo.Context) error {
