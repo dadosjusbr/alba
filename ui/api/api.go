@@ -56,7 +56,7 @@ func getCollectors(c echo.Context, getter collectorsGetter) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-//ExecutionByID returns all executions by collector ID.
+//ExecutionsByID returns all executions by collector ID.
 func ExecutionsByID(c echo.Context) error {
 	//Mockup
 	data := ExecutionDetails{
