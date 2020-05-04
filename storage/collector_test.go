@@ -1,16 +1,11 @@
 package storage
 
 import (
-	"os"
 	"testing"
-
-	"github.com/matryer/is"
 )
 
-func TestConnect_EnvVarNotDefined(t *testing.T) {
-	is := is.New(t)
-	os.Unsetenv("MONGODB")
-	client, err := connect()
-	is.True(client == nil)
-	is.True(err.Error() == "error trying get environment variable:\"$MONGODB is empty\"")
+var c *DBClient
+
+func TestConnect(t *testing.T) {
+
 }
