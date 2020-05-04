@@ -38,8 +38,8 @@ func newApp() *application {
 
 	app.GET("/alba", index)
 	app.GET("/alba/:id", viewExecutionsByID)
-	app.GET(api.URLCollectors, api.AddGetCollector)
-	app.GET(api.URLExecutions, api.ExecutionByID)
+	app.GET(api.CollectorsURL, api.GetCollectorsHandler)
+	app.GET(api.RunsURL, api.ExecutionsByID)
 
 	return &application{
 		app: app,
@@ -61,14 +61,9 @@ func index(c echo.Context) error {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	//TODO: Retornar página hmtl sem resultados
+	//TODO: Retornar página hmtl indicando que não existem resultados
 	if len(results) == 0 {
-		return c.String(http.StatusOK, "No results")
-	}
-
-	if err != nil {
-		c.Logger().Error(err)
-		return echo.ErrInternalServerError
+		c.Render(http.StatusOK, "home.html", "")
 	}
 
 	data := struct {

@@ -8,36 +8,27 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-//URLCollectors represents the collectors url
-const URLCollectors = "/alba/api/collectors"
+//CollectorsURL represents the collectors url.
+const CollectorsURL = "/alba/api/collectors"
 
-//URLExecutions represents the executions url
-const URLExecutions = "/alba/api/collectors/executions/:id"
+//RunsURL represents the executions url.
+const RunsURL = "/alba/api/runs/:id"
 
-type getterCollector interface {
+type collectorsGetter interface {
 	GetCollectors() ([]storage.Collector, error)
 }
 
-type prodGetCollector struct {
+type prodCollectorsGetter struct {
 }
 
-func (prod prodGetCollector) GetCollectors() ([]storage.Collector, error) {
+func (prod prodCollectorsGetter) GetCollectors() ([]storage.Collector, error) {
 	return storage.GetCollectors()
 }
 
-//AddGetCollector set prodGetCollector.
-func AddGetCollector(c echo.Context) error {
-	return getCollector(c, prodGetCollector{})
+//GetCollectorsHandler set prodGetCollector.
+func GetCollectorsHandler(c echo.Context) error {
+	return getCollectors(c, prodCollectorsGetter{})
 }
-
-//NotFound information for the user when their search has no results.
-type NotFound struct {
-	Message          string `json:"message"`
-	DocumentationURL string `json:"docmentation_url"`
-}
-
-const msgNotFound = "Not found"
-const docmentationURL = "https://github.com/dadosjusbr/alba/wiki/API"
 
 //Execution represents a execution
 type Execution struct {
@@ -52,21 +43,21 @@ type ExecutionDetails struct {
 	Executions []Execution
 }
 
-func getCollector(c echo.Context, getter getterCollector) error {
+func getCollectors(c echo.Context, getter collectorsGetter) error {
 	results, err := getter.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
 	if len(results) == 0 {
-		return c.JSON(http.StatusOK, NotFound{msgNotFound, docmentationURL})
+		return echo.ErrNotFound
 	}
 
 	return c.JSON(http.StatusOK, results)
 }
 
 //ExecutionByID returns all executions by collector ID.
-func ExecutionByID(c echo.Context) error {
+func ExecutionsByID(c echo.Context) error {
 	//Mockup
 	data := ExecutionDetails{
 		Entity: "Nome do órgão",
