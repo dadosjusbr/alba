@@ -1,7 +1,10 @@
 package api
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/dadosjusbr/alba/storage"
 
@@ -14,6 +17,34 @@ const CollectorsURL = "/alba/api/collectors"
 //RunsURL represents the executions url.
 const RunsURL = "/alba/api/runs/:id"
 
+//Client represents a storage.DBClient instance
+var Client *storage.DBClient
+
+//ConnectDBClient get the uri from environment var and creates the DBClient instance.
+func ConnectDBClient() error {
+	uri := os.Getenv("MONGODB")
+	if uri == "" {
+		return fmt.Errorf("error trying get environment variable:%q", errors.New("$MONGODB is empty"))
+	}
+
+	Client, err := storage.NewClientDB(uri)
+	if err != nil {
+		return fmt.Errorf("error trying initialize DBClient:%q", err)
+	}
+
+	if err = Client.Connect(); err != nil {
+		return fmt.Errorf("error trying to connect:%q", err)
+
+	}
+
+	return nil
+}
+
+//GetClient return client
+func GetClient() *storage.DBClient {
+	return Client
+}
+
 type collectorsGetter interface {
 	GetCollectors() ([]storage.Collector, error)
 }
@@ -22,7 +53,7 @@ type prodCollectorsGetter struct {
 }
 
 func (prod prodCollectorsGetter) GetCollectors() ([]storage.Collector, error) {
-	return storage.GetCollectors()
+	return Client.GetCollectors()
 }
 
 //GetCollectorsHandler set prodGetCollector.

@@ -3,6 +3,7 @@ package main
 import (
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/dadosjusbr/alba/storage"
@@ -51,12 +52,17 @@ func (a *application) start() {
 }
 
 func main() {
+	if err := api.ConnectDBClient(); err != nil {
+		log.Fatal(err)
+	}
+	defer api.Client.Disconnect()
+
 	newApp().start()
 }
 
 //e.GET("/alba", index)
 func index(c echo.Context) error {
-	results, err := storage.GetCollectors()
+	results, err := api.Client.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
