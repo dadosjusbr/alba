@@ -29,7 +29,7 @@ func main() {
 	}
 	defer client.Disconnect()
 
-	add := collector.ADD{Inserter: client}
+	add := collector.Add{inserter: client}
 
 	app := cli.NewApp()
 	app.Name = "Alba"

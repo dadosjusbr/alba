@@ -18,12 +18,12 @@ type collectorSetter interface {
 	InsertCollector(storage.Collector) error
 }
 
-// ADD is the object for insert a collector.
-type ADD struct {
-	Inserter collectorSetter
+// Add is the object for insert a collector.
+type Add struct {
+	inserter collectorSetter
 }
 
-func (a ADD) insert(c *cli.Context) error {
+func (a Add) insert(c *cli.Context) error {
 	var collector storage.Collector
 	p := c.String(fromFileParam)
 	if p != "" { // From file has priority over passing parameters.
@@ -42,7 +42,7 @@ func (a ADD) insert(c *cli.Context) error {
 
 	collector.UpdateDate = time.Now()
 
-	if err := a.Inserter.InsertCollector(collector); err != nil {
+	if err := a.inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
 	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)
@@ -50,7 +50,7 @@ func (a ADD) insert(c *cli.Context) error {
 }
 
 // AddCommand creates a new command to add collectors to the database.
-func (a ADD) AddCommand() *cli.Command {
+func (a Add) AddCommand() *cli.Command {
 	return &cli.Command{Name: "add-collector",
 		Usage:  "Register a collector from parameters",
 		Action: a.insert,
