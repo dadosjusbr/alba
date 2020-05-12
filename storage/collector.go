@@ -37,7 +37,7 @@ type DBClient struct {
 func NewClientDB(uri string) (*DBClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
-		return nil, fmt.Errorf("new client error. error creating new client: %q", err)
+		return nil, fmt.Errorf("new dbclient error. error creating new client: %q", err)
 	}
 	return &DBClient{mgoClient: client}, nil
 }
@@ -47,7 +47,7 @@ func (c *DBClient) Connect() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 	if err := c.mgoClient.Connect(ctx); err != nil {
-		return fmt.Errorf("error trying to connect:%q", err)
+		return fmt.Errorf("connect error. error trying to connect:%q", err)
 	}
 
 	//Check if alba database exist
