@@ -34,7 +34,7 @@ const (
 )
 
 func newApp(dbClient *storage.DBClient) *application {
-	api := api{client: dbClient, getter: dbClient}
+	api := api{getter: dbClient}
 	view := view{client: dbClient}
 
 	app := echo.New()

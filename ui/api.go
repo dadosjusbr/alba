@@ -14,7 +14,6 @@ type collectorsGetter interface {
 
 //API represents the functions for build and return html pages.
 type api struct {
-	client *storage.DBClient
 	getter collectorsGetter
 }
 
