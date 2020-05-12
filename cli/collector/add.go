@@ -20,7 +20,7 @@ type collectorSetter interface {
 
 // Add is the object for insert a collector.
 type Add struct {
-	inserter collectorSetter
+	Inserter collectorSetter
 }
 
 func (a Add) insert(c *cli.Context) error {
@@ -42,7 +42,7 @@ func (a Add) insert(c *cli.Context) error {
 
 	collector.UpdateDate = time.Now()
 
-	if err := a.inserter.InsertCollector(collector); err != nil {
+	if err := a.Inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
 	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)

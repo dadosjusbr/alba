@@ -57,7 +57,7 @@ func TestAdd_InvalidParams(t *testing.T) {
 }
 
 func newAddApp() *cli.App {
-	add := Add{inserter: fakeInserter{}}
+	add := Add{Inserter: fakeInserter{}}
 	app := cli.NewApp()
 	app.Commands = []*cli.Command{add.AddCommand()}
 	return app
