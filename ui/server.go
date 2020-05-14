@@ -11,12 +11,12 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-//Template represents the html/template
+// Template represents the html/template.
 type Template struct {
 	templates *template.Template
 }
 
-//Render implements echo Renderer
+// Render implements echo Renderer.
 func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 	return t.templates.ExecuteTemplate(w, name, data)
 }
@@ -25,7 +25,7 @@ type application struct {
 	app *echo.Echo
 }
 
-//URLs definition
+// URLs definition.
 const (
 	collectorsForAPI = "/alba/api/collectors"
 	runsForAPI       = "/alba/api/runs/:id"

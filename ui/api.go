@@ -12,19 +12,19 @@ type collectorsGetter interface {
 	GetCollectors() ([]storage.Collector, error)
 }
 
-//API represents the functions for build and return html pages.
+// API represents the functions for build and return html pages.
 type api struct {
 	getter collectorsGetter
 }
 
-//Execution represents a execution
+// Execution represents a execution.
 type Execution struct {
 	Date   string
 	Status string
 	Result string
 }
 
-//ExecutionDetails represents the details of the execution from collector.
+// ExecutionDetails represents a list of executions from a collector.
 type ExecutionDetails struct {
 	Entity     string
 	Executions []Execution
@@ -43,7 +43,7 @@ func (a *api) getCollectors(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-//ExecutionsByID returns all executions by collector ID.
+// ExecutionsByID returns all executions by collector ID.
 func (a *api) executionsByID(c echo.Context) error {
 	//Mockup
 	data := ExecutionDetails{

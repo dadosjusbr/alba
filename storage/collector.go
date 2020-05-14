@@ -14,7 +14,7 @@ import (
 const database = "alba"
 const collectorCollection = "collector"
 
-//Collector represents the information needed for frequent data collection operation
+// Collector represents the information needed for frequent data collection operation.
 type Collector struct {
 	ID                 string    `bson:"id, omitempty" json:"id"`                                     // Initials entity like 'trt13'.
 	Entity             string    `bson:"entity, omitempty" json:"entity"`                             // Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'.
@@ -28,12 +28,12 @@ type Collector struct {
 	LimitYearBackward  int       `bson:"limit-year-backward, omitempty" json:"limit-year-backward"`   // The limit year until which the collector must be executed in its historical execution.
 }
 
-//DBClient represents a mongodb client instance
+// DBClient represents a mongodb client instance.
 type DBClient struct {
 	mgoClient *mongo.Client
 }
 
-//NewClientDB return a DBCLient
+// NewClientDB returns a DBCLient.
 func NewClientDB(uri string) (*DBClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -42,7 +42,7 @@ func NewClientDB(uri string) (*DBClient, error) {
 	return &DBClient{mgoClient: client}, nil
 }
 
-//Connect makes the connection to the database
+// Connect makes the connection and setup of database.
 func (c *DBClient) Connect() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
@@ -50,13 +50,13 @@ func (c *DBClient) Connect() error {
 		return fmt.Errorf("connect error. error trying to connect:%q", err)
 	}
 
-	//Check if alba database exist
+	// Check if alba database exist.
 	results, err := c.mgoClient.ListDatabaseNames(ctx, bson.D{{Key: "name", Value: database}})
 	if err != nil {
 		return fmt.Errorf("connect error. error when listing database names: %q", err)
 	}
 
-	if len(results) == 0 { //First execution for alba database and setup
+	if len(results) == 0 { // Database setup.
 		collection := c.mgoClient.Database(database).Collection(collectorCollection)
 		if err := setIndexesCollector(collection); err != nil {
 			return fmt.Errorf("connect error. set indexes error in collection: %q", collectorCollection)
@@ -86,7 +86,7 @@ func setIndexesCollector(collectorC *mongo.Collection) error {
 	return nil
 }
 
-//InsertCollector insert a collector
+// InsertCollector insert a collector.
 func (c *DBClient) InsertCollector(newCollector Collector) error {
 	collection := c.mgoClient.Database(database).Collection(collectorCollection)
 	if _, err := collection.InsertOne(context.TODO(), newCollector); err != nil {
@@ -96,7 +96,7 @@ func (c *DBClient) InsertCollector(newCollector Collector) error {
 	return nil
 }
 
-// GetCollectors return all collectors in the database
+// GetCollectors return all collectors in the database.
 func (c *DBClient) GetCollectors() ([]Collector, error) {
 	var collectors []Collector
 
@@ -121,7 +121,7 @@ func (c *DBClient) GetCollectors() ([]Collector, error) {
 	return collectors, nil
 }
 
-//Disconnect makes the disconnection to the database
+// Disconnect makes the database disconnection.
 func (c *DBClient) Disconnect() error {
 	if err := c.mgoClient.Disconnect(context.TODO()); err != nil {
 		return fmt.Errorf("error trying to disconnect:%q", err)
