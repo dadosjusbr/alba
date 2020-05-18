@@ -14,12 +14,12 @@ import (
 
 const fromFileParam = "from-file"
 
-type setter interface {
+type inserter interface {
 	InsertCollector(storage.Collector) error
 }
 
 type addCommand struct {
-	setter setter
+	inserter inserter
 }
 
 func (a addCommand) do(c *cli.Context) error {
@@ -41,7 +41,7 @@ func (a addCommand) do(c *cli.Context) error {
 
 	collector.UpdateDate = time.Now()
 
-	if err := a.setter.InsertCollector(collector); err != nil {
+	if err := a.inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
 	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)
@@ -49,8 +49,8 @@ func (a addCommand) do(c *cli.Context) error {
 }
 
 // NewAddCommand creates a new command to add collectors to the database.
-func NewAddCommand(s setter) *cli.Command {
-	a := addCommand{setter: s}
+func NewAddCommand(i inserter) *cli.Command {
+	a := addCommand{inserter: i}
 	return &cli.Command{Name: "add-collector",
 		Usage:  "Register a collector from parameters",
 		Action: a.do,
