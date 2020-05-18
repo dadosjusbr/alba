@@ -18,7 +18,7 @@ func main() {
 		log.Fatal("error trying get environment variable: $MONGODB is empty")
 	}
 
-	client, err := storage.NewClientDB(uri)
+	client, err := storage.NewDBClient(uri)
 	if err != nil {
 		log.Fatal(err)
 	}
