@@ -14,12 +14,12 @@ import (
 
 const fromFileParam = "from-file"
 
-type collectorSetter interface {
+type setter interface {
 	InsertCollector(storage.Collector) error
 }
 
 type addCommand struct {
-	setter collectorSetter
+	setter setter
 }
 
 func (a addCommand) do(c *cli.Context) error {
@@ -49,8 +49,8 @@ func (a addCommand) do(c *cli.Context) error {
 }
 
 // NewAddCommand creates a new command to add collectors to the database.
-func NewAddCommand(setter collectorSetter) *cli.Command {
-	addCmd := addCommand{setter: setter}
+func NewAddCommand(s setter) *cli.Command {
+	addCmd := addCommand{setter: s}
 	return &cli.Command{Name: "add-collector",
 		Usage:  "Register a collector from parameters",
 		Action: addCmd.do,
