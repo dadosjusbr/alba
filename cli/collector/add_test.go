@@ -16,7 +16,7 @@ func (fakeInserter) InsertCollector(storage.Collector) error {
 	return nil
 }
 
-func ExampleAdd_AddCommand() {
+func ExampleNewAddCommand() {
 	app := newAddApp()
 	app.Run([]string{
 		"alba",
@@ -57,8 +57,7 @@ func TestAdd_InvalidParams(t *testing.T) {
 }
 
 func newAddApp() *cli.App {
-	add := Add{Inserter: fakeInserter{}}
 	app := cli.NewApp()
-	app.Commands = []*cli.Command{add.AddCommand()}
+	app.Commands = []*cli.Command{NewAddCommand(fakeInserter{})}
 	return app
 }

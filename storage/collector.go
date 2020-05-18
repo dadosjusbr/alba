@@ -33,8 +33,8 @@ type DBClient struct {
 	mgoClient *mongo.Client
 }
 
-//NewClientDB return a DBCLient
-func NewClientDB(uri string) (*DBClient, error) {
+//NewDBClient return a DBCLient
+func NewDBClient(uri string) (*DBClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, fmt.Errorf("new dbclient error. error creating new client: %q", err)
