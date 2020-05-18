@@ -50,10 +50,10 @@ func (a addCommand) do(c *cli.Context) error {
 
 // NewAddCommand creates a new command to add collectors to the database.
 func NewAddCommand(s setter) *cli.Command {
-	addCmd := addCommand{setter: s}
+	a := addCommand{setter: s}
 	return &cli.Command{Name: "add-collector",
 		Usage:  "Register a collector from parameters",
-		Action: addCmd.do,
+		Action: a.do,
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "id", Usage: "Initials entity like 'trt13'"},
 			&cli.StringFlag{Name: "entity", Usage: "Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'"},
