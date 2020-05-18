@@ -18,12 +18,11 @@ type collectorSetter interface {
 	InsertCollector(storage.Collector) error
 }
 
-// Add is the object for insert a collector.
-type Add struct {
-	Inserter collectorSetter
+type addCommand struct {
+	setter collectorSetter
 }
 
-func (a Add) insert(c *cli.Context) error {
+func (a addCommand) do(c *cli.Context) error {
 	var collector storage.Collector
 	p := c.String(fromFileParam)
 	if p != "" { // From file has priority over passing parameters.
@@ -42,18 +41,19 @@ func (a Add) insert(c *cli.Context) error {
 
 	collector.UpdateDate = time.Now()
 
-	if err := a.Inserter.InsertCollector(collector); err != nil {
+	if err := a.setter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
 	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)
 	return nil
 }
 
-// AddCommand creates a new command to add collectors to the database.
-func (a Add) AddCommand() *cli.Command {
+// NewAddCommand creates a new command to add collectors to the database.
+func NewAddCommand(setter collectorSetter) *cli.Command {
+	addCmd := addCommand{setter: setter}
 	return &cli.Command{Name: "add-collector",
 		Usage:  "Register a collector from parameters",
-		Action: a.insert,
+		Action: addCmd.do,
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "id", Usage: "Initials entity like 'trt13'"},
 			&cli.StringFlag{Name: "entity", Usage: "Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'"},
