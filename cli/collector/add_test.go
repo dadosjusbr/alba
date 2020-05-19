@@ -16,7 +16,7 @@ func (fakeInserter) InsertCollector(storage.Collector) error {
 	return nil
 }
 
-func ExampleAddCommand() {
+func ExampleNewAddCommand() {
 	app := newAddApp()
 	app.Run([]string{
 		"alba",
@@ -24,7 +24,6 @@ func ExampleAddCommand() {
 		"-from-file=input.json",
 	})
 	// Output: Collector ID: trt13, Path: github.com/dadosjusbr/coletores/trt13
-
 }
 
 func TestAdd_Sucess(t *testing.T) {
@@ -59,6 +58,6 @@ func TestAdd_InvalidParams(t *testing.T) {
 
 func newAddApp() *cli.App {
 	app := cli.NewApp()
-	app.Commands = []*cli.Command{addCommand(&fakeInserter{})}
+	app.Commands = []*cli.Command{NewAddCommand(fakeInserter{})}
 	return app
 }

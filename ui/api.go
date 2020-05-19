@@ -3,33 +3,35 @@ package main
 import (
 	"net/http"
 
-	"github.com/dadosjusbr/alba/storage"
-
 	"github.com/labstack/echo/v4"
 )
 
-func index(f finder, c echo.Context) error {
+type execution struct {
+	Date   string
+	Status string
+	Result string
+}
+
+type executionDetails struct {
+	Entity     string
+	Executions []execution
+}
+
+func getCollectors(f finder, c echo.Context) error {
 	results, err := f.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	//TODO: Retornar página hmtl indicando que não existem resultados
 	if len(results) == 0 {
-		c.Render(http.StatusOK, "home.html", "")
+		return echo.ErrNotFound
 	}
 
-	data := struct {
-		Collectors []storage.Collector
-	}{
-		results,
-	}
-
-	return c.Render(http.StatusOK, "home.html", data)
+	return c.JSON(http.StatusOK, results)
 }
 
-func viewExecutions(f finder, c echo.Context) error {
-	//mockup
+func getExecutions(f finder, c echo.Context) error {
+	//Mockup
 	data := executionDetails{
 		Entity: "Nome do órgão",
 		Executions: []execution{
@@ -40,5 +42,5 @@ func viewExecutions(f finder, c echo.Context) error {
 		},
 	}
 
-	return c.Render(http.StatusOK, "executionsDetails.html", data)
+	return c.JSON(http.StatusOK, data)
 }

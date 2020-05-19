@@ -18,42 +18,11 @@ type inserter interface {
 	InsertCollector(storage.Collector) error
 }
 
-type add struct {
+type addCommand struct {
 	inserter inserter
 }
 
-type prodInserter struct {
-}
-
-func (i prodInserter) InsertCollector(c storage.Collector) error {
-	return storage.InsertCollector(c)
-}
-
-// AddCommand creates a new command to add collectors to the database.
-func AddCommand() *cli.Command {
-	return addCommand(prodInserter{})
-}
-
-func addCommand(i inserter) *cli.Command {
-	a := add{inserter: i}
-	return &cli.Command{Name: "add-collector",
-		Usage:  "Register a collector from parameters",
-		Action: a.do,
-		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "id", Usage: "Initials entity like 'trt13'"},
-			&cli.StringFlag{Name: "entity", Usage: "Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'"},
-			&cli.StringFlag{Name: "city", Usage: "City of the entity from which the collector extracts data"},
-			&cli.StringFlag{Name: "fu", Usage: "Federation unit of the entity from which the collector extracts data"},
-			&cli.StringFlag{Name: "path", Usage: "Collector repository path. Using the import pattern in golang like 'github.com/dadosjusbr/coletores/trt13'"},
-			&cli.IntFlag{Name: "frequency", Usage: "Frequency of the collector execution in days. Values must be between 1 and 30. To be executed monthly it must be filled with '30'"},
-			&cli.IntFlag{Name: "start-day", Usage: "Day of the month for the collector execution. Values must be between 1 and 30"},
-			&cli.IntFlag{Name: "limit-month-backward", Usage: "The limit month to which the collector must be executed in its historical execution"},
-			&cli.IntFlag{Name: "limit-year-backward", Usage: "The limit year until which the collector must be executed in its historical execution"},
-			&cli.StringFlag{Name: fromFileParam, Usage: "File path containing the spec of the collection to be added."},
-		}}
-}
-
-func (cmd add) do(c *cli.Context) error {
+func (a addCommand) do(c *cli.Context) error {
 	var collector storage.Collector
 	p := c.String(fromFileParam)
 	if p != "" { // From file has priority over passing parameters.
@@ -72,11 +41,31 @@ func (cmd add) do(c *cli.Context) error {
 
 	collector.UpdateDate = time.Now()
 
-	if err := cmd.inserter.InsertCollector(collector); err != nil {
+	if err := a.inserter.InsertCollector(collector); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
 	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)
 	return nil
+}
+
+// NewAddCommand creates a new command to add collectors to the database.
+func NewAddCommand(i inserter) *cli.Command {
+	a := addCommand{inserter: i}
+	return &cli.Command{Name: "add-collector",
+		Usage:  "Register a collector from parameters",
+		Action: a.do,
+		Flags: []cli.Flag{
+			&cli.StringFlag{Name: "id", Usage: "Initials entity like 'trt13'"},
+			&cli.StringFlag{Name: "entity", Usage: "Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'"},
+			&cli.StringFlag{Name: "city", Usage: "City of the entity from which the collector extracts data"},
+			&cli.StringFlag{Name: "fu", Usage: "Federation unit of the entity from which the collector extracts data"},
+			&cli.StringFlag{Name: "path", Usage: "Collector repository path. Using the import pattern in golang like 'github.com/dadosjusbr/coletores/trt13'"},
+			&cli.IntFlag{Name: "frequency", Usage: "Frequency of the collector execution in days. Values must be between 1 and 30. To be executed monthly it must be filled with '30'"},
+			&cli.IntFlag{Name: "start-day", Usage: "Day of the month for the collector execution. Values must be between 1 and 30"},
+			&cli.IntFlag{Name: "limit-month-backward", Usage: "The limit month to which the collector must be executed in its historical execution"},
+			&cli.IntFlag{Name: "limit-year-backward", Usage: "The limit year until which the collector must be executed in its historical execution"},
+			&cli.StringFlag{Name: fromFileParam, Usage: "File path containing the spec of the collection to be added."},
+		}}
 }
 
 func fromFile(path string) (storage.Collector, error) {
