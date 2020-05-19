@@ -25,18 +25,19 @@ type application struct {
 	app *echo.Echo
 }
 
+type finder interface {
+	GetCollectors() ([]storage.Collector, error)
+}
+
 //URLs definition
 const (
-	collectorsForAPI = "/alba/api/collectors"
-	runsForAPI       = "/alba/api/runs/:id"
-	index            = "/alba"
-	runs             = "/alba/:id"
+	apiCollectors = "/alba/api/collectors"
+	apiRuns       = "/alba/api/runs/:id"
+	home          = "/alba"
+	runs          = "/alba/:id"
 )
 
 func newApp(dbClient *storage.DBClient) *application {
-	api := api{getter: dbClient}
-	view := view{client: dbClient}
-
 	app := echo.New()
 
 	templates := &Template{
@@ -47,10 +48,18 @@ func newApp(dbClient *storage.DBClient) *application {
 
 	app.Renderer = templates
 
-	app.GET(index, view.index)
-	app.GET(runs, view.executionsByID)
-	app.GET(collectorsForAPI, api.getCollectors)
-	app.GET(runsForAPI, api.executionsByID)
+	app.GET(home, func(c echo.Context) error {
+		return index(dbClient, c)
+	})
+	app.GET(runs, func(c echo.Context) error {
+		return viewExecutions(dbClient, c)
+	})
+	app.GET(apiCollectors, func(c echo.Context) error {
+		return getCollectors(dbClient, c)
+	})
+	app.GET(apiRuns, func(c echo.Context) error {
+		return getExecutions(dbClient, c)
+	})
 
 	return &application{
 		app: app,
@@ -69,7 +78,7 @@ func main() {
 		log.Fatal("error trying get environment variable: $MONGODB is empty")
 	}
 
-	client, err := storage.NewClientDB(uri)
+	client, err := storage.NewDBClient(uri)
 	if err != nil {
 		log.Fatal(err)
 	}
