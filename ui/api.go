@@ -3,35 +3,22 @@ package main
 import (
 	"net/http"
 
-	"github.com/dadosjusbr/alba/storage"
-
 	"github.com/labstack/echo/v4"
 )
 
-type collectorsGetter interface {
-	GetCollectors() ([]storage.Collector, error)
-}
-
-// API represents the functions for build and return html pages.
-type api struct {
-	getter collectorsGetter
-}
-
-// Execution represents a execution.
-type Execution struct {
+type execution struct {
 	Date   string
 	Status string
 	Result string
 }
 
-// ExecutionDetails represents a list of executions from a collector.
-type ExecutionDetails struct {
+type executionDetails struct {
 	Entity     string
-	Executions []Execution
+	Executions []execution
 }
 
-func (a *api) getCollectors(c echo.Context) error {
-	results, err := a.getter.GetCollectors()
+func getCollectors(f finder, c echo.Context) error {
+	results, err := f.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
@@ -43,12 +30,11 @@ func (a *api) getCollectors(c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-// ExecutionsByID returns all executions by collector ID.
-func (a *api) executionsByID(c echo.Context) error {
+func getExecutions(f finder, c echo.Context) error {
 	//Mockup
-	data := ExecutionDetails{
+	data := executionDetails{
 		Entity: "Nome do órgão",
-		Executions: []Execution{
+		Executions: []execution{
 			{Date: "10/01/2020", Status: "Finalizado com sucesso", Result: "link"},
 			{Date: "10/02/2020", Status: "Finalizado com sucesso", Result: "link"},
 			{Date: "10/03/2020", Status: "Finalizado com erro", Result: "link"},

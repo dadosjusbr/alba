@@ -8,13 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// View represents the functions for build and return html pages.
-type view struct {
-	client *storage.DBClient
-}
-
-func (v view) index(c echo.Context) error {
-	results, err := v.client.GetCollectors()
+func index(f finder, c echo.Context) error {
+	results, err := f.GetCollectors()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
@@ -33,11 +28,11 @@ func (v view) index(c echo.Context) error {
 	return c.Render(http.StatusOK, "home.html", data)
 }
 
-func (v view) executionsByID(c echo.Context) error {
-	// Mockup.
-	data := ExecutionDetails{
+func viewExecutions(f finder, c echo.Context) error {
+	//mockup
+	data := executionDetails{
 		Entity: "Nome do órgão",
-		Executions: []Execution{
+		Executions: []execution{
 			{Date: "10/01/2020", Status: "Finalizado com sucesso", Result: "link"},
 			{Date: "10/02/2020", Status: "Finalizado com sucesso", Result: "link"},
 			{Date: "10/03/2020", Status: "Finalizado com erro", Result: "link"},

@@ -33,8 +33,8 @@ type DBClient struct {
 	mgoClient *mongo.Client
 }
 
-// NewClientDB returns a DBCLient.
-func NewClientDB(uri string) (*DBClient, error) {
+//NewDBClient return a DBCLient
+func NewDBClient(uri string) (*DBClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return nil, fmt.Errorf("new dbclient error. error creating new client: %q", err)
@@ -42,7 +42,7 @@ func NewClientDB(uri string) (*DBClient, error) {
 	return &DBClient{mgoClient: client}, nil
 }
 
-// Connect makes the connection and setup of database.
+//Connect makes the connection and setup of database.
 func (c *DBClient) Connect() error {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()

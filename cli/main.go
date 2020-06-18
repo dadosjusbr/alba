@@ -18,7 +18,7 @@ func main() {
 		log.Fatal("error trying get environment variable: $MONGODB is empty")
 	}
 
-	client, err := storage.NewClientDB(uri)
+	client, err := storage.NewDBClient(uri)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,12 +29,10 @@ func main() {
 	}
 	defer client.Disconnect()
 
-	add := collector.Add{Inserter: client}
-
 	app := cli.NewApp()
 	app.Name = "Alba"
 	app.Usage = "A tool for manage the process of continuous data release through steps such as: collection, validation, packaging and storage."
-	app.Commands = []*cli.Command{add.AddCommand()}
+	app.Commands = []*cli.Command{collector.NewAddCommand(client)}
 	err = app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
