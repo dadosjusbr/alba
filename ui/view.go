@@ -29,7 +29,7 @@ func index(f finder, c echo.Context) error {
 }
 
 func viewExecutions(f finder, c echo.Context) error {
-	//mockup
+	// Mockup.
 	data := executionDetails{
 		Entity: "Nome do órgão",
 		Executions: []execution{

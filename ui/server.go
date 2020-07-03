@@ -29,7 +29,7 @@ type finder interface {
 	GetCollectors() ([]storage.Collector, error)
 }
 
-//URLs definition
+// URLs definition.
 const (
 	apiCollectors = "/alba/api/collectors"
 	apiRuns       = "/alba/api/runs/:id"
