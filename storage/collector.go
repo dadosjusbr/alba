@@ -51,12 +51,12 @@ func (c *DBClient) Connect() error {
 	}
 
 	// Check if alba database exist.
-	results, err := c.mgoClient.ListDatabaseNames(ctx, bson.D{{Key: "name", Value: database}})
+	albaExists, err := c.mgoClient.ListDatabaseNames(ctx, bson.D{{Key: "name", Value: database}})
 	if err != nil {
 		return fmt.Errorf("connect error. error when listing database names: %q", err)
 	}
 
-	if len(results) == 0 { // Database setup.
+	if len(albaExists) == 0 { // Database setup.
 		collection := c.mgoClient.Database(database).Collection(collectorCollection)
 		if err := setIndexesCollector(collection); err != nil {
 			return fmt.Errorf("connect error. set indexes error in collection: %q", collectorCollection)
