@@ -14,7 +14,7 @@ func index(f finder, c echo.Context) error {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	//TODO: Retornar página hmtl indicando que não existem resultados
+	// TODO: Retornar página hmtl indicando que não existem resultados.
 	if len(results) == 0 {
 		c.Render(http.StatusOK, "home.html", "")
 	}
@@ -29,7 +29,7 @@ func index(f finder, c echo.Context) error {
 }
 
 func viewExecutions(f finder, c echo.Context) error {
-	//mockup
+	// Mockup.
 	data := executionDetails{
 		Entity: "Nome do órgão",
 		Executions: []execution{

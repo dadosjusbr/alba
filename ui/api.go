@@ -31,7 +31,7 @@ func getCollectors(f finder, c echo.Context) error {
 }
 
 func getExecutions(f finder, c echo.Context) error {
-	//Mockup
+	// Mockup.
 	data := executionDetails{
 		Entity: "Nome do órgão",
 		Executions: []execution{

@@ -39,7 +39,7 @@ func (fake fakeCollectorsFinder) GetCollectors() ([]storage.Collector, error) {
 func newAppTest() *echo.Echo {
 	app := echo.New()
 	app.GET(apiCollectors, func(c echo.Context) error {
-		//fake database result
+		// Fake database result.
 		return getCollectors(fakeCollectorsFinder{resultDB, nil}, c)
 	})
 
@@ -68,7 +68,7 @@ func TestGetCollector_Sucess(t *testing.T) {
 func TestGetCollector_EmptyDB(t *testing.T) {
 	app := echo.New()
 	app.GET(apiCollectors, func(c echo.Context) error {
-		//result is an empty list
+		// Result is an empty list.
 		return getCollectors(fakeCollectorsFinder{[]storage.Collector{}, nil}, c)
 	})
 
@@ -83,7 +83,7 @@ func TestGetCollector_EmptyDB(t *testing.T) {
 func TestGetCollector_InternalServerError(t *testing.T) {
 	app := echo.New()
 	app.GET(apiCollectors, func(c echo.Context) error {
-		//result is an empty list and the function raise an error
+		// Result is an empty list and the function raise an error.
 		return getCollectors(fakeCollectorsFinder{[]storage.Collector{}, errors.New("get collector: internal server error")}, c)
 	})
 
