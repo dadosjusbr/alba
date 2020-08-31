@@ -42,24 +42,24 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
     {
         "name": "",
         "dir": "",
-        "base-dir": "", // Campo opcional. Se for preenchido sobrescreve o default-base-dir
-        "build-env": "chave=valor,chave=valor,...", // Campo opcional. Se for preenchido sobrescreve o default-build-env
-        "run-env": "chave=valor,chave=valor,..." // Campo opcional. Se for preenchido sobrescreve o default-run-env
+        "base-dir": "", 
+        "build-env": "chave=valor,chave=valor,...",
+        "run-env": "chave=valor,chave=valor,..."
     },
     {
         "name": "",
         "dir": "",
-        "base-dir": "", // Campo opcional. Se for preenchido sobrescreve o default-base-dir
-        "build-env": "chave=valor,chave=valor,...", // Campo opcional. Se for preenchido sobrescreve o default-build-env
-        "run-env": "chave=valor,chave=valor,..." // Campo opcional. Se for preenchido sobrescreve o default-run-env
+        "base-dir": "", 
+        "build-env": "chave=valor,chave=valor,...",
+        "run-env": "chave=valor,chave=valor,..."
     },
 ],
 "error-handler": {
     "name": "",
     "dir": "",
-    "base-dir": "", // Campo opcional. Se for preenchido sobrescreve o default-base-dir
-    "build-env": "chave=valor,chave=valor,...", // Campo opcional. Se for preenchido sobrescreve o default-build-env
-    "run-env": "chave=valor,chave=valor,..." // Campo opcional. Se for preenchido sobrescreve o default-run-env
+    "base-dir": "",
+    "build-env": "chave=valor,chave=valor,...", 
+    "run-env": "chave=valor,chave=valor,..."
 },
 "entity": "",
 "city": "",
