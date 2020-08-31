@@ -117,6 +117,7 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
 "start-day": 5,
 "limit-month-backward": 2,
 "limit-year-backward": 2018
+}
 ```
 **Todo**: Adicionar tag para GIT_COMMIT - Porque pode variar com o tempo \\
 **Todo**: Adicionar tag para MES e ANO - Porque varia a cada execução
