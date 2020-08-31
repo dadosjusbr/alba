@@ -35,7 +35,7 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
 ``` json
 {
 "name": "",
-"default-base-dir": "github.com/...",
+"default-base-dir": "",
 "default-build-env": "chave=valor,chave=valor,...",
 "default-run-env": "chave=valor,chave=valor,...",
 "stages":[
@@ -64,6 +64,7 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
 "entity": "",
 "city": "",
 "fu": "",
+"url-repo": "",
 "frequency": "",
 "start-day": "",
 "limit-month-backward": "",
@@ -111,13 +112,13 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
 "entity": "Tribunal Regional do Trabalho 13ª Região",
 "city": "João Pessoa",
 "fu": "PB",
-"path": "github.com/dadosjusbr/coletores/trt13",
+"url-repo": "github.com/dadosjusbr/coletores",
 "frequency": 30,
 "start-day": 5,
 "limit-month-backward": 2,
 "limit-year-backward": 2018
 ```
-**Todo**: Adicionar tag para GIT_COMMIT - Porque pode variar com o tempo
+**Todo**: Adicionar tag para GIT_COMMIT - Porque pode variar com o tempo \\
 **Todo**: Adicionar tag para MES e ANO - Porque varia a cada execução
 
 Um exemplo preenchido para cadastro pode ser visto nesse [arquivo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/input.json).
