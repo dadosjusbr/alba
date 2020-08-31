@@ -1,0 +1,36 @@
+{
+"name": "",
+"default-base-dir": "github.com/...",
+"default-build-env": "chave=valor,chave=valor,...",
+"default-run-env": "chave=valor,chave=valor,...",
+"stages":[
+    {
+        "name": "",
+        "dir": "",
+        "base-dir": "",
+        "build-env": "chave=valor,chave=valor,...",
+        "run-env": "chave=valor,chave=valor,..."
+    },
+    {
+        "name": "",
+        "dir": "",
+        "base-dir": "",
+        "build-env": "chave=valor,chave=valor,...", 
+        "run-env": "chave=valor,chave=valor,..."
+    }
+],
+"error-handler": {
+    "name": "",
+    "dir": "",
+    "base-dir": "", 
+    "build-env": "chave=valor,chave=valor,...", 
+    "run-env": "chave=valor,chave=valor,..."
+},
+"entity": "",
+"city": "",
+"fu": "",
+"frequency": "",
+"start-day": "",
+"limit-month-backward": "",
+"limit-year-backward": ""
+}
