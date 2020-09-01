@@ -98,8 +98,8 @@ Os parâmetros `GIT_COMMIT`, `--mes` e `--ano` são padrões do contexto do [Dad
 E consideramos as seguintes regras de negócio:
 - Se o `GIT_COMMIT` não estiver preenchido o pacote cli faz o download a última versão do código (a partir do endereço em `repo`) e carrega a informação com o `git rev-list -1 HEAD`.
 - No caso de `--mes` e `--ano`:
- - Quando a execução for iniciada via cli, os valores devem ser passados por parâmetro [no comando]().
- - Quando a execução for iniciada pelo [worker](), ele irá avaliar quais são os valores a partir de execuções anteriores.
+    - Quando a execução for iniciada via cli, os valores devem ser passados por parâmetro [no comando]().
+    - Quando a execução for iniciada pelo [worker](), ele irá avaliar quais são os valores a partir de execuções anteriores.
 
 ---
 
