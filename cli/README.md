@@ -2,35 +2,9 @@
 
 Interface de linha de comando para interagir com as funcionalidades de persisitência e gerenciamento de [Pipelines](https://github.com/dadosjusbr/executor).
 
-## Pipeline DadosJusBR
-O Pipeline DadosJusBR tem os seguintes estágios:
+## Definição de um Pipeline 
 
-### Coleta 
-Etapa responsável por encontrar os dados no site oficial do órgão, fazer o download dos arquivos e traduzir as informações para um formato único do DadosJusBr [(*crawling result*)](https://github.com/dadosjusbr/storage/blob/master/agency.go#L27). 
-
-- [DadosJusBR Collectors](https://github.com/dadosjusbr/coletores)
-
-### Validação
-Responsável por fazer validações nos dados de acordo a cada contexto.
-
-- [*Work in progress*](https://github.com/dadosjusbr/coletores)
-
-### Empacotamento
-Responsável por padronizar os dados no formato de datapackages.
-
-- [DadosJusBR Packager](https://github.com/dadosjusbr/coletores/tree/master/packager)
-
-### Armazenamento
-Responsável por armazenar os dados extraídos, além de versionar também os artefatos baixados e gerados durante a coleta.
-
-- [DadosJusBR Store](https://github.com/dadosjusbr/coletores/tree/master/store)
-
-### Estágio de tratamento de erros
-- [DadosJusBR Store Error](https://github.com/dadosjusbr/coletores/tree/master/store-error)
-
-### Definindo um Pipeline 
-
-Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de Pipeline é preciso que a definição para cada órgão siga o seguinte formato:
+Para gerenciar e automatizar a execução periódica de um Pipeline é preciso que a definição siga o seguinte formato:
 
 ``` json
 {
@@ -71,43 +45,38 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
 "limit-year-backward": ""
 }
 ```
+O dicionário que descreve essa estrutura está disponível em [dadosjusbr/alba/storage/pipeline.go]().
+
+### Exemplo de Pipeline DadosJusBR
 
 **Exemplo para o coletor do [Tribunal Regional do Trabalho - 13ª região](https://github.com/dadosjusbr/coletores/tree/master/trt13)**
 ``` json
 {
 "name": "Tribunal Regional do Trabalho 13ª Região",
 "default-base-dir": "github.com/dadosjusbr/coletores/",
-"default-build-env": "",
-"default-run-env": "",
 "stages":[
     {
         "name": "Coleta",
         "dir": "trt13",
-        "base-dir": "",
-        "build-env": "",
-        "run-env": ""
+        "build-env": "GIT_COMMIT=",
+        "run-env": "--mes=,--ano="
     },
     {
         "name": "Empacotamento",
         "dir": "packager",
-        "base-dir": "",
-        "build-env": "",
-        "run-env": ""
+        "run-env": "OUTPUT_FOLDER=/output"
     },
     {
         "name": "Armazenamento",
         "dir": "store",
-        "base-dir": "",
-        "build-env": "",
-        "run-env": ""
+        "run-env": "OUTPUT_FOLDER=/output,MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
     }
 ],
 "error-handler": {
     "name": "Armazenamento de Erros",
     "dir": "store-error",
-    "base-dir": "",
-    "build-env": "",
-    "run-env": ""
+    "run-env": "MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
+
 },
 "entity": "Tribunal Regional do Trabalho 13ª Região",
 "city": "João Pessoa",
@@ -119,10 +88,18 @@ Para que a Alba seja capaz de gerenciar e automatizar a execução periódica de
 "limit-year-backward": 2018
 }
 ```
-**Todo**: Adicionar tag para GIT_COMMIT - Porque pode variar com o tempo \\
-**Todo**: Adicionar tag para MES e ANO - Porque varia a cada execução
+Os parâmetros `GIT_COMMIT`, `--mes` e `--ano` são padrões do contexto do [DadosJusBR](https://github.com/dadosjusbr/coletores/blob/master/TUTORIAL.md). Os valores desses parâmetros podem variar ao longo do tempo e a cada execução, por isso, na definição de um pipeline DadosJusBr deixamos seus valores vazios:
 
-Um exemplo preenchido para cadastro pode ser visto nesse [arquivo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/input.json).
+``` json
+"default-build-env": "GIT_COMMIT=",
+"default-build-env": "--mes=,--ano="
+``` 
+
+E consideramos as seguintes regras de negócio:
+- Se o `GIT_COMMIT` não estiver preenchido o pacote cli faz o download a última versão do código (a partir do endereço em `repo`) e carrega a informação com o `git rev-list -1 HEAD`.
+- No caso de `--mes` e `--ano`:
+ - Quando a execução for iniciada via cli, os valores devem ser passados por parâmetro [no comando]().
+ - Quando a execução for iniciada pelo [worker](), ele irá avaliar quais são os valores a partir de execuções anteriores.
 
 ---
 
@@ -135,15 +112,15 @@ Fazer o build do projeto criando um executável de nome **alba**:
 
 `go build -o alba`
 
-### Visualizar os comandos da CLI através do comando:**
+### Visualizar os comandos da CLI através do comando:
 
 `./alba`
 
 ### Cadastrar um Pipeline
-Conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/input.json).
+Conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/.pipeline.json).
 
 *Exemplo para o coletor do [Tribunal Regional do Trabalho - 13ª região](https://github.com/dadosjusbr/coletores/tree/master/trt13)*
 
-`./alba add-collector --from-file=collector/input.json`
+`./alba add-collector --from-file=collector/pipeline.json`
 
 ### Executando um Pipeline
