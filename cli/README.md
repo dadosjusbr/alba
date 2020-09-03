@@ -35,6 +35,7 @@ Para gerenciar e automatizar a execução periódica de um Pipeline é preciso q
     "build-env": "chave=valor,chave=valor,...", 
     "run-env": "chave=valor,chave=valor,..."
 },
+"id": "",
 "entity": "",
 "city": "",
 "fu": "",
@@ -78,6 +79,7 @@ O dicionário que descreve essa estrutura está disponível em [dadosjusbr/alba/
     "run-env": "MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
 
 },
+"id": "trt13",
 "entity": "Tribunal Regional do Trabalho 13ª Região",
 "city": "João Pessoa",
 "fu": "PB",
