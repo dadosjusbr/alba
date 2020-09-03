@@ -9,7 +9,6 @@ Para gerenciar e automatizar a execução periódica de um Pipeline é preciso q
 ``` json
 {
 "name": "",
-"default-base-dir": "",
 "default-build-env": "chave=valor,chave=valor,...",
 "default-run-env": "chave=valor,chave=valor,...",
 "stages":[
@@ -47,6 +46,7 @@ Para gerenciar e automatizar a execução periódica de um Pipeline é preciso q
 }
 ```
 O dicionário que descreve essa estrutura está disponível em [dadosjusbr/alba/storage/pipeline.go]().
+O campo do [executor.Pipeline.DefaultBaseDir](https://github.com/dadosjusbr/executor/blob/3f2bad506ad914557b101fd3f0d78b5c897d8ec3/pipeline.go#L35) não é passado na definição aqui porque ele é gerado a partir do download do repositório que é gerenciado pela Alba.
 
 ### Exemplo de Pipeline DadosJusBR
 
@@ -54,7 +54,6 @@ O dicionário que descreve essa estrutura está disponível em [dadosjusbr/alba/
 ``` json
 {
 "name": "Tribunal Regional do Trabalho 13ª Região",
-"default-base-dir": "github.com/dadosjusbr/coletores/",
 "stages":[
     {
         "name": "Coleta",
