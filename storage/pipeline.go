@@ -18,6 +18,7 @@ const executionCollection = "execution"
 
 // Pipeline represents the information needed for frequent data collection operation.
 type Pipeline struct {
+	Pipeline           executor.Pipeline `bson:"pipeline, omitempty" json:"pipeline"`                         // Represents the sequence of stages for data release.
 	ID                 string            `bson:"id, omitempty" json:"id"`                                     // Initials entity like 'trt13'.
 	Entity             string            `bson:"entity, omitempty" json:"entity"`                             // Entity from which the pipeline extracts data like 'Tribunal Regional do Trabalho 13° Região'.
 	City               string            `bson:"city, omitempty" json:"city"`                                 // City of the entity from which the pipeline extracts data.
@@ -28,7 +29,6 @@ type Pipeline struct {
 	LimitMonthBackward int               `bson:"limit-month-backward, omitempty" json:"limit-month-backward"` // The limit month to which the pipeline must be executed in its historical execution.
 	LimitYearBackward  int               `bson:"limit-year-backward, omitempty" json:"limit-year-backward"`   // The limit year until which the pipeline must be executed in its historical execution.
 	UpdateDate         time.Time         `bson:"update-date, omitempty" json:"update-date"`                   // Last time the pipeline register has been updated.
-	Pipeline           executor.Pipeline `bson:"pipeline, omitempty" json:"pipeline"`                         // Represents the sequence of stages for data release.
 }
 
 // DBClient represents a mongodb client instance.
@@ -89,10 +89,10 @@ func setIndexesPipeline(pipeline *mongo.Collection) error {
 	return nil
 }
 
-// InsertPipeline insert a pipeline in the database.
-func (c *DBClient) InsertPipeline(newPipeline Pipeline) error {
+// InsertPipeline insert one or more pipelines in the database.
+func (c *DBClient) InsertPipeline(newPipelines []Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
-	if _, err := collection.InsertOne(context.TODO(), newPipeline); err != nil {
+	if _, err := collection.InsertMany(context.TODO(), []interface{}{newPipelines}); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
