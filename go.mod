@@ -3,6 +3,7 @@ module github.com/dadosjusbr/alba
 go 1.14
 
 require (
+	github.com/dadosjusbr/executor v1.0.0
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/matryer/is v1.3.0
 	github.com/steinfletcher/apitest v1.4.6
