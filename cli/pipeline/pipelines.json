@@ -1,4 +1,5 @@
-{
+[
+    {
     "name": "Tribunal Regional do Trabalho 13ª Região",
     "default-base-dir": "github.com/dadosjusbr/coletores/",
     "stages":[
@@ -35,3 +36,4 @@
     "limit-month-backward": 2,
     "limit-year-backward": 2018
     }
+]
