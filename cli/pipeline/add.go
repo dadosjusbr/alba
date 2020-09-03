@@ -1,4 +1,4 @@
-package collector
+package pipeline
 
 import (
 	"encoding/json"
@@ -15,7 +15,7 @@ import (
 const fromFileParam = "from-file"
 
 type inserter interface {
-	InsertCollector(storage.Collector) error
+	InsertPipeline(storage.Pipeline) error
 }
 
 type addCommand struct {
@@ -23,69 +23,69 @@ type addCommand struct {
 }
 
 func (a addCommand) do(c *cli.Context) error {
-	var collector storage.Collector
+	var pipeline storage.Pipeline
 	p := c.String(fromFileParam)
 	if p != "" { // From file has priority over passing parameters.
-		col, err := fromFile(p)
+		pip, err := fromFile(p)
 		if err != nil {
-			return fmt.Errorf("error adding collector:{%q}", err)
+			return fmt.Errorf("error adding pipeline:{%q}", err)
 		}
-		collector = col
+		pipeline = pip
 	} else {
-		collector = fromContext(c)
+		pipeline = fromContext(c)
 	}
-	err := validate(collector)
+	err := validate(pipeline)
 	if err != nil {
-		return fmt.Errorf("invalid collector descriptor:{%q}", err)
+		return fmt.Errorf("invalid pipeline descriptor:{%q}", err)
 	}
 
-	collector.UpdateDate = time.Now()
+	pipeline.UpdateDate = time.Now()
 
-	if err := a.inserter.InsertCollector(collector); err != nil {
+	if err := a.inserter.InsertPipeline(pipeline); err != nil {
 		return fmt.Errorf("error updating database:{%q}", err)
 	}
-	fmt.Printf("Collector ID: %s, Path: %s", collector.ID, collector.Path)
+	fmt.Printf("Collector ID: %s, Path: %s", pipeline.ID, pipeline.Path)
 	return nil
 }
 
-// NewAddCommand creates a new command to add collectors to the database.
+// NewAddCommand creates a new command to add a pipeline to the database.
 func NewAddCommand(i inserter) *cli.Command {
 	a := addCommand{inserter: i}
-	return &cli.Command{Name: "add-collector",
-		Usage:  "Register a collector from parameters",
+	return &cli.Command{Name: "add",
+		Usage:  "Register a pipeline from parameters",
 		Action: a.do,
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "id", Usage: "Initials entity like 'trt13'"},
-			&cli.StringFlag{Name: "entity", Usage: "Entity from which the collector extracts data like 'Tribunal Regional do Trabalho 13° Região'"},
-			&cli.StringFlag{Name: "city", Usage: "City of the entity from which the collector extracts data"},
-			&cli.StringFlag{Name: "fu", Usage: "Federation unit of the entity from which the collector extracts data"},
+			&cli.StringFlag{Name: "entity", Usage: "Entity from which the pipeline extracts data like 'Tribunal Regional do Trabalho 13° Região'"},
+			&cli.StringFlag{Name: "city", Usage: "City of the entity from which the pipeline extracts data"},
+			&cli.StringFlag{Name: "fu", Usage: "Federation unit of the entity from which the pipeline extracts data"},
 			&cli.StringFlag{Name: "path", Usage: "Collector repository path. Using the import pattern in golang like 'github.com/dadosjusbr/coletores/trt13'"},
-			&cli.IntFlag{Name: "frequency", Usage: "Frequency of the collector execution in days. Values must be between 1 and 30. To be executed monthly it must be filled with '30'"},
-			&cli.IntFlag{Name: "start-day", Usage: "Day of the month for the collector execution. Values must be between 1 and 30"},
-			&cli.IntFlag{Name: "limit-month-backward", Usage: "The limit month to which the collector must be executed in its historical execution"},
-			&cli.IntFlag{Name: "limit-year-backward", Usage: "The limit year until which the collector must be executed in its historical execution"},
+			&cli.IntFlag{Name: "frequency", Usage: "Frequency of the pipeline execution in days. Values must be between 1 and 30. To be executed monthly it must be filled with '30'"},
+			&cli.IntFlag{Name: "start-day", Usage: "Day of the month for the pipeline execution. Values must be between 1 and 30"},
+			&cli.IntFlag{Name: "limit-month-backward", Usage: "The limit month to which the pipeline must be executed in its historical execution"},
+			&cli.IntFlag{Name: "limit-year-backward", Usage: "The limit year until which the pipeline must be executed in its historical execution"},
 			&cli.StringFlag{Name: fromFileParam, Usage: "File path containing the spec of the collection to be added."},
 		}}
 }
 
-func fromFile(path string) (storage.Collector, error) {
+func fromFile(path string) (storage.Pipeline, error) {
 	f, err := os.Open(path)
 	if err != nil {
-		return storage.Collector{}, fmt.Errorf("error opening file [%s]:{%q}", path, err)
+		return storage.Pipeline{}, fmt.Errorf("error opening file [%s]:{%q}", path, err)
 	}
 	defer f.Close()
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
-		return storage.Collector{}, fmt.Errorf("{error reading file [%s]:{%q}", path, err)
+		return storage.Pipeline{}, fmt.Errorf("{error reading file [%s]:{%q}", path, err)
 	}
-	var c storage.Collector
+	var c storage.Pipeline
 	if err := json.Unmarshal(b, &c); err != nil {
-		return storage.Collector{}, fmt.Errorf("error parsing collector descriptor [path:%s \n desc:'%s']:{%q}", path, string(b), err)
+		return storage.Pipeline{}, fmt.Errorf("error parsing pipeline descriptor [path:%s \n desc:'%s']:{%q}", path, string(b), err)
 	}
 	return c, nil
 }
 
-func validate(col storage.Collector) error {
+func validate(col storage.Pipeline) error {
 	if col.ID == "" {
 		return fmt.Errorf("--id were not provided completely. Please provide all parameters to continue")
 	}
@@ -117,8 +117,8 @@ func validate(col storage.Collector) error {
 	return nil
 }
 
-func fromContext(c *cli.Context) storage.Collector {
-	return storage.Collector{
+func fromContext(c *cli.Context) storage.Pipeline {
+	return storage.Pipeline{
 		ID:                 c.String("id"),
 		Entity:             c.String("entity"),
 		City:               c.String("city"),

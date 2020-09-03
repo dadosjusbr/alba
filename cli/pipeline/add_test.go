@@ -1,4 +1,4 @@
-package collector
+package pipeline
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 type fakeInserter struct {
 }
 
-func (fakeInserter) InsertCollector(storage.Collector) error {
+func (fakeInserter) InsertPipeline(storage.Pipeline) error {
 	return nil
 }
 
@@ -20,10 +20,10 @@ func ExampleNewAddCommand() {
 	app := newAddApp()
 	app.Run([]string{
 		"alba",
-		"add-collector",
+		"add",
 		"-from-file=input.json",
 	})
-	// Output: Collector ID: trt13, Path: github.com/dadosjusbr/coletores/trt13
+	// Output: Pipeline ID: trt13, Repo: github.com/dadosjusbr/coletores/trt13
 }
 
 func TestAdd_Sucess(t *testing.T) {
@@ -51,7 +51,7 @@ func TestAdd_InvalidParams(t *testing.T) {
 		{"EmptyLimitYearBackward", []string{"-id=1", "-entity=1", "-city=1", "-fu=1", "-path=1", "-frequency=1", "-start-day=1", "-limit-month-backward=1", "-limit-year-backward"}},
 	}
 	for _, test := range tests {
-		args := append([]string{"alba", "add-collector"}, test.args...)
+		args := append([]string{"alba", "add"}, test.args...)
 		is.True(app.Run(args) != nil)
 	}
 }
