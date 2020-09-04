@@ -13,7 +13,7 @@ import (
 )
 
 type inserter interface {
-	InsertPipeline([]storage.Pipeline) error
+	InsertPipeline(storage.Pipeline) error
 }
 
 type addCommand struct {
@@ -25,17 +25,16 @@ func (a addCommand) do(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("error adding pipeline: {%q}", err)
 	}
-	for p, pip := range pipelines {
+	for _, pip := range pipelines {
 		err := validate(pip)
 		if err != nil {
 			return fmt.Errorf("error adding pipeline. invalid pipeline descriptor:{%q}", err)
 		}
 		pip.UpdateDate = time.Now()
-		pipelines[p] = pip
-	}
-
-	if err := a.inserter.InsertPipeline(pipelines); err != nil {
-		return fmt.Errorf("error adding pipeline. error updating database: {%q}", err)
+		if err := a.inserter.InsertPipeline(pip); err != nil {
+			return fmt.Errorf("error adding pipeline. error updating database: {%q}", err)
+		}
+		fmt.Printf("Pipeline ID: %s, Repo: %s\n", pip.ID, pip.Repo)
 	}
 
 	return nil
@@ -62,11 +61,11 @@ func fromFile(path string) ([]storage.Pipeline, error) {
 	if err != nil {
 		return []storage.Pipeline{}, fmt.Errorf("{error reading file [%s]:{%q}", path, err)
 	}
-	var list []storage.Pipeline
-	if err := json.Unmarshal(b, &list); err != nil {
+	var pipelines []storage.Pipeline
+	if err := json.Unmarshal(b, &pipelines); err != nil {
 		return []storage.Pipeline{}, fmt.Errorf("error parsing pipeline descriptor [path:%s \n desc:'%s']:{%q}", path, string(b), err)
 	}
-	return list, nil
+	return pipelines, nil
 }
 
 func validate(p storage.Pipeline) error {
