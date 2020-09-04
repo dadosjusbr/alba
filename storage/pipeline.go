@@ -71,28 +71,22 @@ func (c *DBClient) Connect() error {
 
 func setIndexesPipeline(pipeline *mongo.Collection) error {
 	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
-	indexes := []mongo.IndexModel{
-		{
-			Keys:    bsonx.Doc{{Key: "repo", Value: bsonx.Int32(1)}},
-			Options: options.Index().SetUnique(true),
-		},
-		{
-			Keys:    bsonx.Doc{{Key: "id", Value: bsonx.Int32(1)}},
-			Options: options.Index().SetUnique(true),
-		},
+	indexes := mongo.IndexModel{
+		Keys:    bsonx.Doc{{Key: "repo", Value: bsonx.Int32(1)}, {Key: "id", Value: bsonx.Int32(1)}},
+		Options: options.Index().SetUnique(true),
 	}
 
-	if _, err := pipeline.Indexes().CreateMany(context.Background(), indexes, opts); err != nil {
+	if _, err := pipeline.Indexes().CreateOne(context.Background(), indexes, opts); err != nil {
 		return fmt.Errorf("create index error: %q", err)
 	}
 
 	return nil
 }
 
-// InsertPipeline insert one or more pipelines in the database.
-func (c *DBClient) InsertPipeline(newPipelines []Pipeline) error {
+// InsertPipeline insert a pipeline in the database.
+func (c *DBClient) InsertPipeline(newPipeline Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
-	if _, err := collection.InsertMany(context.TODO(), []interface{}{newPipelines}); err != nil {
+	if _, err := collection.InsertOne(context.TODO(), newPipeline); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
