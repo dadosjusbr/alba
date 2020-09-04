@@ -9,6 +9,7 @@ import (
 
 	"github.com/dadosjusbr/alba/storage"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/urfave/cli/v2"
 )
 
@@ -23,16 +24,20 @@ type addCommand struct {
 func (a addCommand) do(c *cli.Context) error {
 	pipelines, err := fromFile(c.String("from-file"))
 	if err != nil {
-		return fmt.Errorf("error adding pipeline: {%q}", err)
+		return fmt.Errorf("error adding pipeline: %q", err)
 	}
 	for _, pip := range pipelines {
 		err := validate(pip)
 		if err != nil {
-			return fmt.Errorf("error adding pipeline. invalid pipeline descriptor:{%q}", err)
+			return fmt.Errorf("error adding pipeline. invalid pipeline descriptor: %q", err)
+		}
+		pip.Pipeline.DefaultBaseDir, err = cloneRepo(pip.Repo)
+		if err != nil {
+			return fmt.Errorf("error adding pipeline: %q", err)
 		}
 		pip.UpdateDate = time.Now()
 		if err := a.inserter.InsertPipeline(pip); err != nil {
-			return fmt.Errorf("error adding pipeline. error updating database: {%q}", err)
+			return fmt.Errorf("error adding pipeline. error updating database: %q", err)
 		}
 		fmt.Printf("Pipeline ID: %s, Repo: %s\n", pip.ID, pip.Repo)
 	}
@@ -98,4 +103,23 @@ func validate(p storage.Pipeline) error {
 	}
 
 	return nil
+}
+
+func cloneRepo(repo string) (string, error) {
+	reposDir := os.Getenv("REPOSDIR")
+	if reposDir == "" {
+		return "", fmt.Errorf("error cloning the repository. REPOSDIR env var can not be empty")
+	}
+	reposDir = fmt.Sprintf("%s/%s", reposDir, repo)
+	url := fmt.Sprintf("https://%s", repo)
+	fmt.Println(url)
+	_, err := git.PlainClone(reposDir, false, &git.CloneOptions{
+		URL:      url,
+		Progress: os.Stdout,
+	})
+	if err != nil {
+		return "", fmt.Errorf("error cloning the repository: %q", err)
+	}
+
+	return reposDir, nil
 }
