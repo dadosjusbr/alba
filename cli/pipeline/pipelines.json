@@ -1,30 +1,52 @@
 [
     {
-    "name": "Tribunal Regional do Trabalho 13ª Região",
-    "default-base-dir": "github.com/dadosjusbr/coletores/",
-    "stages":[
-        {
-            "name": "Coleta",
-            "dir": "trt13",
-            "build-env": "GIT_COMMIT=",
-            "run-env": "--mes=,--ano="
-        },
-        {
-            "name": "Empacotamento",
-            "dir": "packager",
-            "run-env": "OUTPUT_FOLDER=/output"
-        },
-        {
-            "name": "Armazenamento",
-            "dir": "store",
-            "run-env": "OUTPUT_FOLDER=/output,MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
+    "pipeline": {
+        "name": "Tribunal Regional do Trabalho 13ª Região",
+        "stages":[
+            {
+                "name": "Coleta",
+                "dir": "trt13",
+                "build-env": {"GIT_COMMIT":""},
+                "run-env": {"--mes":"","--ano":""}
+            },
+            {
+                "name": "Empacotamento",
+                "dir": "packager",
+                "run-env": {"OUTPUT_FOLDER":"/output"}
+            },
+            {
+                "name": "Armazenamento",
+                "dir": "store",
+                "run-env": {
+                    "OUTPUT_FOLDER":"/output",
+                    "MONGODB_URI":"",
+                    "MONGODB_DBNAME":"",
+                    "MONGODB_MICOL":"",
+                    "MONGODB_AGCOL":"",
+                    "SWIFT_USERNAME":"",
+                    "SWIFT_APIKEY":"",
+                    "SWIFT_AUTHURL":"",
+                    "SWIFT_DOMAIN":"",
+                    "SWIFT_CONTAINER":"" 
+                }
+            }
+        ],
+        "error-handler": {
+            "name": "Armazenamento de Erros",
+            "dir": "store-error",
+            "run-env": {
+                "OUTPUT_FOLDER":"/output",
+                "MONGODB_URI":"",
+                "MONGODB_DBNAME":"",
+                "MONGODB_MICOL":"",
+                "MONGODB_AGCOL":"",
+                "SWIFT_USERNAME":"",
+                "SWIFT_APIKEY":"",
+                "SWIFT_AUTHURL":"",
+                "SWIFT_DOMAIN":"",
+                "SWIFT_CONTAINER":"" 
+            }
         }
-    ],
-    "error-handler": {
-        "name": "Armazenamento de Erros",
-        "dir": "store-error",
-        "run-env": "MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
-    
     },
     "id": "trt13",
     "entity": "Tribunal Regional do Trabalho 13ª Região",
@@ -35,5 +57,64 @@
     "start-day": 5,
     "limit-month-backward": 2,
     "limit-year-backward": 2018
-    }
+    },
+    {
+        "pipeline": {
+            "name": "Ministério Público da Paraíba",
+            "stages":[
+                {
+                    "name": "Coleta",
+                    "dir": "mppb",
+                    "build-env": {"GIT_COMMIT":""},
+                    "run-env": {"--mes":"","--ano":""}
+                },
+                {
+                    "name": "Empacotamento",
+                    "dir": "packager",
+                    "run-env": {"OUTPUT_FOLDER":"/output"}
+                },
+                {
+                    "name": "Armazenamento",
+                    "dir": "store",
+                    "run-env": {
+                        "OUTPUT_FOLDER":"/output",
+                        "MONGODB_URI":"",
+                        "MONGODB_DBNAME":"",
+                        "MONGODB_MICOL":"",
+                        "MONGODB_AGCOL":"",
+                        "SWIFT_USERNAME":"",
+                        "SWIFT_APIKEY":"",
+                        "SWIFT_AUTHURL":"",
+                        "SWIFT_DOMAIN":"",
+                        "SWIFT_CONTAINER":"" 
+                    }
+                }
+            ],
+            "error-handler": {
+                "name": "Armazenamento de Erros",
+                "dir": "store-error",
+                "run-env": {
+                    "OUTPUT_FOLDER":"/output",
+                    "MONGODB_URI":"",
+                    "MONGODB_DBNAME":"",
+                    "MONGODB_MICOL":"",
+                    "MONGODB_AGCOL":"",
+                    "SWIFT_USERNAME":"",
+                    "SWIFT_APIKEY":"",
+                    "SWIFT_AUTHURL":"",
+                    "SWIFT_DOMAIN":"",
+                    "SWIFT_CONTAINER":"" 
+                }            
+            }
+        },
+        "id": "mppb",
+        "entity": "Ministério Público da Paraíba",
+        "city": "João Pessoa",
+        "fu": "PB",
+        "repo": "github.com/dadosjusbr/coletores",
+        "frequency": 30,
+        "start-day": 5,
+        "limit-month-backward": 2,
+        "limit-year-backward": 2018
+        }
 ]
