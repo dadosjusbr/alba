@@ -118,10 +118,9 @@ Fazer o build do projeto criando um executável de nome **alba**:
 `./alba`
 
 ### Cadastrar um Pipeline
-Conforme o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/.pipeline.json).
+Passando como paraâmetro o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/.pipeline.json). 
+Nesse arquivo descrevemos os pipelines para os coletores do [Tribunal Regional do Trabalho - 13ª região](https://github.com/dadosjusbr/coletores/tree/master/trt13) e [Ministério Público da Paraíba](https://github.com/dadosjusbr/coletores/tree/master/mppb).
 
-*Exemplo para o coletor do [Tribunal Regional do Trabalho - 13ª região](https://github.com/dadosjusbr/coletores/tree/master/trt13)*
-
-`./alba add-collector --from-file=collector/pipeline.json`
+`./alba add --from-file pipeline/pipeline-example.json`
 
 ### Executando um Pipeline
