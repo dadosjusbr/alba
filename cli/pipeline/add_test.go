@@ -28,7 +28,7 @@ func ExampleNewAddCommand() {
 	//Pipeline ID: mppb, Repo: github.com/dadosjusbr/coletores
 }
 
-func TestAdd_InvalidParam(t *testing.T) {
+func TestAdd_RequiredParam(t *testing.T) {
 	is := is.New(t)
 	app := newAddApp()
 	args := append([]string{"alba", "add", ""})
