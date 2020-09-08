@@ -25,27 +25,28 @@ func (a addCommand) do(c *cli.Context) error {
 	if err != nil {
 		return fmt.Errorf("error adding pipeline: %q", err)
 	}
+
 	for _, pip := range pipelines {
 		err := validate(pip)
 		if err != nil {
 			return fmt.Errorf("error adding pipeline. invalid pipeline descriptor: %q", err)
 		}
-		url := fmt.Sprintf("https://%s", pip.Repo)
 
+		url := fmt.Sprintf("https://%s", pip.Repo)
 		resp, err := http.Head(url)
 		if err != nil {
 			return fmt.Errorf("error adding pipeline. error http.Head(): %q", err)
 		}
 		if resp.StatusCode != 200 {
-			return fmt.Errorf("error adding pipeline. error reaching repo url: %q", resp.Status)
+			return fmt.Errorf("error adding pipeline. error reaching repo url(%s): %q", url, resp.Status)
 		}
+
 		pip.UpdateDate = time.Now()
 		if err := a.inserter.InsertPipeline(pip); err != nil {
 			return fmt.Errorf("error adding pipeline. error updating database: %q", err)
 		}
 		fmt.Printf("Pipeline ID: %s, Repo: %s\n", pip.ID, pip.Repo)
 	}
-
 	return nil
 }
 
@@ -66,10 +67,12 @@ func fromFile(path string) ([]storage.Pipeline, error) {
 		return []storage.Pipeline{}, fmt.Errorf("error opening file [%s]:{%q}", path, err)
 	}
 	defer f.Close()
+
 	b, err := ioutil.ReadAll(f)
 	if err != nil {
 		return []storage.Pipeline{}, fmt.Errorf("{error reading file [%s]:{%q}", path, err)
 	}
+
 	var pipelines []storage.Pipeline
 	if err := json.Unmarshal(b, &pipelines); err != nil {
 		return []storage.Pipeline{}, fmt.Errorf("error parsing pipeline descriptor [path:%s \n desc:'%s']:{%q}", path, string(b), err)
@@ -105,6 +108,5 @@ func validate(p storage.Pipeline) error {
 	if p.LimitYearBackward == 0 {
 		return fmt.Errorf("limit-year-backward were not provided. Please provide all mandatory parameters to continue")
 	}
-
 	return nil
 }
