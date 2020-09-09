@@ -21,7 +21,7 @@ func ExampleNewAddCommand() {
 	app.Run([]string{
 		"alba",
 		"add",
-		"-from-file=pipelines.json",
+		"--from-file=pipeline-example.json",
 	})
 	// Output:
 	//Pipeline ID: trt13, Repo: github.com/dadosjusbr/coletores
@@ -32,6 +32,13 @@ func TestAdd_RequiredParam(t *testing.T) {
 	is := is.New(t)
 	app := newAddApp()
 	args := append([]string{"alba", "add", ""})
+	is.True(app.Run(args) != nil)
+}
+
+func TestAdd_NoexistentURL(t *testing.T) {
+	is := is.New(t)
+	app := newAddApp()
+	args := append([]string{"alba", "add", "--from-file=pipeline-example-error.json"})
 	is.True(app.Run(args) != nil)
 }
 

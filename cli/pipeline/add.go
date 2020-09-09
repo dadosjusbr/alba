@@ -38,7 +38,7 @@ func (a addCommand) do(c *cli.Context) error {
 			return fmt.Errorf("error adding pipeline. error http.Head(): %q", err)
 		}
 		if resp.StatusCode != 200 {
-			return fmt.Errorf("error adding pipeline. error reaching repo url(%s): %q", url, resp.Status)
+			return fmt.Errorf("error adding pipeline. error reaching repo url [%s]: %q", url, resp.Status)
 		}
 
 		pip.UpdateDate = time.Now()

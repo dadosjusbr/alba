@@ -48,7 +48,7 @@ func (r runCommand) do(c *cli.Context) error {
 		year := c.String("year")
 		// Todo: Função que reúne as regras de negócio para um pipeline DadosJusBR,
 		// como configuração das variáveis commit, mes e ano
-		p, err = worker.ConfigureDadosjusBR(p, month, year)
+		p, err = worker.SetupDadosjusBR(p, month, year)
 		if err != nil {
 			return fmt.Errorf("error running pipeline. error setting dadosjusbr pipeline: %q", err)
 		}
