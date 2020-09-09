@@ -31,6 +31,13 @@ type Pipeline struct {
 	UpdateDate         time.Time         `bson:"update-date, omitempty" json:"update-date"`                   // Last time the pipeline register has been updated.
 }
 
+// Execution represents the information about a result of a pipeline execution.
+type Execution struct {
+	PipelineResult executor.PipelineResult `bson:"pipeline-result, omitempty" json:"pipeline-result"` // Represents the results for a pipeline execution.
+	ID             string                  `bson:"id, omitempty" json:"id"`                           // Initials entity like 'trt13'.
+	Entity         string                  `bson:"entity, omitempty" json:"entity"`                   // Entity from which the pipeline extracts data like 'Tribunal Regional do Trabalho 13° Região'.
+}
+
 // DBClient represents a mongodb client instance.
 type DBClient struct {
 	mgoClient *mongo.Client
@@ -94,7 +101,7 @@ func (c *DBClient) InsertPipeline(p Pipeline) error {
 }
 
 // InsertExecution inserts the result of a pipeline execution in the database.
-func (c *DBClient) InsertExecution(e executor.PipelineResult) error {
+func (c *DBClient) InsertExecution(e Execution) error {
 	collection := c.mgoClient.Database(database).Collection(executionCollection)
 	if _, err := collection.InsertOne(context.TODO(), e); err != nil {
 		return fmt.Errorf("insert error: %q", err)
@@ -128,7 +135,7 @@ func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 	return pipelines, nil
 }
 
-// GetPipeline returns a pipeline from database.
+// GetPipeline returns a pipeline from database by id.
 func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
 	var pipeline Pipeline
 
@@ -141,6 +148,56 @@ func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
 		return Pipeline{}, fmt.Errorf("error getting pipeline for id: %s. Find error: %q", id, err)
 	}
 	return pipeline, nil
+}
+
+// GetExecutions returns all executions in the database.
+func (c *DBClient) GetExecutions() ([]Execution, error) {
+	var executions []Execution
+
+	collection := c.mgoClient.Database(database).Collection(executionCollection)
+	itens, err := collection.Find(context.TODO(), bson.D{{}})
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []Execution{}, nil
+		}
+		return nil, fmt.Errorf("error getting executions. Find error: %q", err)
+	}
+
+	for itens.Next(context.Background()) {
+		var item Execution
+		if err := itens.Decode(&item); err != nil {
+			return nil, fmt.Errorf("error getting executions. Decode error: %q", err)
+		}
+		executions = append(executions, item)
+	}
+	itens.Close(context.Background())
+
+	return executions, nil
+}
+
+// GetExecutionsByID returns all executions of a pipeline.
+func (c *DBClient) GetExecutionsByID(id string) ([]Execution, error) {
+	var executions []Execution
+
+	collection := c.mgoClient.Database(database).Collection(executionCollection)
+	itens, err := collection.Find(context.TODO(), bson.D{{Key: "id", Value: id}})
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []Execution{}, nil
+		}
+		return nil, fmt.Errorf("error getting executions. Find error: %q", err)
+	}
+
+	for itens.Next(context.Background()) {
+		var item Execution
+		if err := itens.Decode(&item); err != nil {
+			return nil, fmt.Errorf("error getting executions. Decode error: %q", err)
+		}
+		executions = append(executions, item)
+	}
+	itens.Close(context.Background())
+
+	return executions, nil
 }
 
 // Disconnect makes the database disconnection.
