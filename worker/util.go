@@ -24,7 +24,7 @@ func CloneRepository(repo string) (string, string, error) {
 	}
 
 	url := fmt.Sprintf("https://%s", repo)
-	log.Printf("Cloning the repository [%s] into [%s]\n", url, defaultBaseDir)
+	log.Printf("Cloning the repository [%s] into [%s]\n\n", url, defaultBaseDir)
 	r, err := git.PlainClone(defaultBaseDir, false, &git.CloneOptions{
 		URL:      url,
 		Progress: os.Stdout,
