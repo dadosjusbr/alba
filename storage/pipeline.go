@@ -84,9 +84,19 @@ func setIndexesPipeline(pipeline *mongo.Collection) error {
 }
 
 // InsertPipeline insert a pipeline in the database.
-func (c *DBClient) InsertPipeline(newPipeline Pipeline) error {
+func (c *DBClient) InsertPipeline(p Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
-	if _, err := collection.InsertOne(context.TODO(), newPipeline); err != nil {
+	if _, err := collection.InsertOne(context.TODO(), p); err != nil {
+		return fmt.Errorf("insert error: %q", err)
+	}
+
+	return nil
+}
+
+// InsertExecution insert a pipeline in the database.
+func (c *DBClient) InsertExecution(e executor.PipelineResult) error {
+	collection := c.mgoClient.Database(database).Collection(executionCollection)
+	if _, err := collection.InsertOne(context.TODO(), e); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
@@ -116,6 +126,21 @@ func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 	itens.Close(context.Background())
 
 	return pipelines, nil
+}
+
+// GetPipeline return all pipelines in the database.
+func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
+	var pipeline Pipeline
+
+	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
+	err := collection.FindOne(context.TODO(), bson.D{{Key: "id", Value: id}}).Decode(&pipeline)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Pipeline{}, nil
+		}
+		return Pipeline{}, fmt.Errorf("error getting pipeline for id: %s. Find error: %q", id, err)
+	}
+	return pipeline, nil
 }
 
 // Disconnect makes the database disconnection.
