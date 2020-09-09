@@ -36,7 +36,7 @@ type DBClient struct {
 	mgoClient *mongo.Client
 }
 
-// NewDBClient return a DBCLient.
+// NewDBClient returns a DBCLient.
 func NewDBClient(uri string) (*DBClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -83,7 +83,7 @@ func setIndexesPipeline(pipeline *mongo.Collection) error {
 	return nil
 }
 
-// InsertPipeline insert a pipeline in the database.
+// InsertPipeline inserts a pipeline in the database.
 func (c *DBClient) InsertPipeline(p Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
 	if _, err := collection.InsertOne(context.TODO(), p); err != nil {
@@ -93,7 +93,7 @@ func (c *DBClient) InsertPipeline(p Pipeline) error {
 	return nil
 }
 
-// InsertExecution insert a pipeline in the database.
+// InsertExecution inserts the result of a pipeline execution in the database.
 func (c *DBClient) InsertExecution(e executor.PipelineResult) error {
 	collection := c.mgoClient.Database(database).Collection(executionCollection)
 	if _, err := collection.InsertOne(context.TODO(), e); err != nil {
@@ -103,7 +103,7 @@ func (c *DBClient) InsertExecution(e executor.PipelineResult) error {
 	return nil
 }
 
-// GetPipelines return all pipelines in the database.
+// GetPipelines returns all pipelines in the database.
 func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 	var pipelines []Pipeline
 
@@ -128,7 +128,7 @@ func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 	return pipelines, nil
 }
 
-// GetPipeline return all pipelines in the database.
+// GetPipeline returns a pipeline from database.
 func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
 	var pipeline Pipeline
 
