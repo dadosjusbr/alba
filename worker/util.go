@@ -11,8 +11,7 @@ import (
 )
 
 // CloneRepository is responsible for get the latest code version of pipeline repository.
-// From the environment variable BASEDIR creates and returns the DefaultBaseDir for the pipeline
-// and the latest commit in the repository.
+// Creates and returns the DefaultBaseDir for the pipeline and the latest commit in the repository.
 func CloneRepository(repo string) (string, string, error) {
 	baseDir := os.Getenv("BASEDIR")
 	if baseDir == "" {
@@ -46,8 +45,8 @@ func CloneRepository(repo string) (string, string, error) {
 	return defaultBaseDir, fmt.Sprintf("%s", commit.Hash), nil
 }
 
-// ConfigureDadosjusBR TODO: Função que reúne as regras de negócio para um pipeline DadosJusBR,
+// SetupDadosjusBR TODO: Função que reúne as regras de negócio para um pipeline DadosJusBR,
 // como configuração das variáveis commit, mes e ano
-func ConfigureDadosjusBR(p storage.Pipeline, month, year string) (storage.Pipeline, error) {
+func SetupDadosjusBR(p storage.Pipeline, month, year string) (storage.Pipeline, error) {
 	return storage.Pipeline{}, nil
 }
