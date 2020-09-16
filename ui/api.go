@@ -17,8 +17,8 @@ type executionDetails struct {
 	Executions []execution
 }
 
-func getCollectors(f finder, c echo.Context) error {
-	results, err := f.GetCollectors()
+func getPipelines(f finder, c echo.Context) error {
+	results, err := f.GetPipelines()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError

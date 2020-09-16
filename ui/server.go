@@ -26,12 +26,15 @@ type application struct {
 }
 
 type finder interface {
-	GetCollectors() ([]storage.Collector, error)
+	GetPipelines() ([]storage.Pipeline, error)
+	GetExecutions() ([]storage.Execution, error)
+	GetPipeline(id string) (storage.Pipeline, error)
+	GetExecutionsByID(id string) ([]storage.Execution, error)
 }
 
 // URLs definition.
 const (
-	apiCollectors = "/alba/api/collectors"
+	apiCollectors = "/alba/api/pipelines"
 	apiRuns       = "/alba/api/runs/:id"
 	home          = "/alba"
 	runs          = "/alba/:id"
@@ -55,7 +58,7 @@ func newApp(dbClient *storage.DBClient) *application {
 		return viewExecutions(dbClient, c)
 	})
 	app.GET(apiCollectors, func(c echo.Context) error {
-		return getCollectors(dbClient, c)
+		return getPipelines(dbClient, c)
 	})
 	app.GET(apiRuns, func(c echo.Context) error {
 		return getExecutions(dbClient, c)
