@@ -7,12 +7,11 @@ import (
 
 	"github.com/dadosjusbr/alba/storage"
 	"github.com/dadosjusbr/alba/worker"
-	"github.com/dadosjusbr/executor"
 )
 
 type managerExecution interface {
 	GetPipeline(string) (storage.Pipeline, error)
-	InsertExecution(executor.PipelineResult) error
+	InsertExecution(storage.Execution) error
 }
 
 type runCommand struct {
@@ -60,7 +59,12 @@ func (r runCommand) do(c *cli.Context) error {
 	}
 
 	result, _ := p.Pipeline.Run()
-	r.manager.InsertExecution(result)
+	e := storage.Execution{
+		PipelineResult: result,
+		Entity:         p.Entity,
+		ID:             p.ID,
+	}
+	r.manager.InsertExecution(e)
 
 	return nil
 }
