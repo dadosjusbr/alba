@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dadosjusbr/alba/storage"
@@ -15,9 +14,9 @@ func index(f finder, c echo.Context) error {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	// TODO: Retornar página hmtl indicando que não existem resultados.
+
 	if len(results) == 0 {
-		c.Render(http.StatusOK, "home.html", "")
+		return echo.ErrNotFound
 	}
 
 	data := struct {
@@ -36,18 +35,18 @@ func viewExecutions(f finder, c echo.Context) error {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	// TODO: Retornar página html indicando que não existem resultados.
+
 	if len(results) == 0 {
-		c.Render(http.StatusOK, "home.html", "")
+		return echo.ErrNotFound
 	}
 
 	data := struct {
 		Executions []storage.Execution
+		Entity     string
 	}{
 		results,
+		results[0].Entity,
 	}
-
-	fmt.Println(data)
 
 	return c.Render(http.StatusOK, "executionsDetails.html", data)
 }
