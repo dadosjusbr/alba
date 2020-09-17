@@ -30,17 +30,45 @@ func getPipelines(f finder, c echo.Context) error {
 	return c.JSON(http.StatusOK, results)
 }
 
-func getExecutions(f finder, c echo.Context) error {
-	// Mockup.
-	data := executionDetails{
-		Entity: "Nome do órgão",
-		Executions: []execution{
-			{Date: "10/01/2020", Status: "Finalizado com sucesso", Result: "link"},
-			{Date: "10/02/2020", Status: "Finalizado com sucesso", Result: "link"},
-			{Date: "10/03/2020", Status: "Finalizado com erro", Result: "link"},
-			{Date: "11/03/2020", Status: "Finalizado com sucesso", Result: "link"},
-		},
+func getPipelineByID(f finder, c echo.Context) error {
+	id := c.Param("id")
+	result, err := f.GetPipeline(id)
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.ErrInternalServerError
+	}
+	if result.ID == "" {
+		return echo.ErrNotFound
 	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, result)
+}
+
+func getExecutions(f finder, c echo.Context) error {
+	results, err := f.GetExecutions()
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.ErrInternalServerError
+	}
+
+	if len(results) == 0 {
+		return echo.ErrNotFound
+	}
+
+	return c.JSON(http.StatusOK, results)
+}
+
+func getExecutionsByID(f finder, c echo.Context) error {
+	id := c.Param("id")
+	results, err := f.GetExecutionsByID(id)
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.ErrInternalServerError
+	}
+
+	if len(results) == 0 {
+		return echo.ErrNotFound
+	}
+
+	return c.JSON(http.StatusOK, results)
 }
