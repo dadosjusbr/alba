@@ -5,20 +5,16 @@
         "stages":[
             {
                 "name": "Coleta",
-                "dir": "trt13",
-                "build-env": {"GIT_COMMIT":""},
-                "run-env": {"--mes":"","--ano":""}
+                "dir": "trt13"
             },
             {
                 "name": "Empacotamento",
-                "dir": "packager",
-                "run-env": {"OUTPUT_FOLDER":"/output"}
+                "dir": "packager"
             },
             {
                 "name": "Armazenamento",
                 "dir": "store",
                 "run-env": {
-                    "OUTPUT_FOLDER":"/output",
                     "MONGODB_URI":"",
                     "MONGODB_DBNAME":"",
                     "MONGODB_MICOL":"",
@@ -35,7 +31,6 @@
             "name": "Armazenamento de Erros",
             "dir": "store-error",
             "run-env": {
-                "OUTPUT_FOLDER":"/output",
                 "MONGODB_URI":"",
                 "MONGODB_DBNAME":"",
                 "MONGODB_MICOL":"",
