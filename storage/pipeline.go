@@ -31,12 +31,19 @@ type Pipeline struct {
 	UpdateDate         time.Time         `bson:"update-date, omitempty" json:"update-date"`                   // Last time the pipeline register has been updated.
 }
 
+// Execution represents the information about a result of a pipeline execution.
+type Execution struct {
+	PipelineResult executor.PipelineResult `bson:"pipeline-result, omitempty" json:"pipeline-result"` // Represents the results for a pipeline execution.
+	ID             string                  `bson:"id, omitempty" json:"id"`                           // Initials entity like 'trt13'.
+	Entity         string                  `bson:"entity, omitempty" json:"entity"`                   // Entity from which the pipeline extracts data like 'Tribunal Regional do Trabalho 13° Região'.
+}
+
 // DBClient represents a mongodb client instance.
 type DBClient struct {
 	mgoClient *mongo.Client
 }
 
-// NewDBClient return a DBCLient.
+// NewDBClient returns a DBCLient.
 func NewDBClient(uri string) (*DBClient, error) {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
@@ -83,17 +90,27 @@ func setIndexesPipeline(pipeline *mongo.Collection) error {
 	return nil
 }
 
-// InsertPipeline insert a pipeline in the database.
-func (c *DBClient) InsertPipeline(newPipeline Pipeline) error {
+// InsertPipeline inserts a pipeline in the database.
+func (c *DBClient) InsertPipeline(p Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
-	if _, err := collection.InsertOne(context.TODO(), newPipeline); err != nil {
+	if _, err := collection.InsertOne(context.TODO(), p); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
 
 	return nil
 }
 
-// GetPipelines return all pipelines in the database.
+// InsertExecution inserts the result of a pipeline execution in the database.
+func (c *DBClient) InsertExecution(e Execution) error {
+	collection := c.mgoClient.Database(database).Collection(executionCollection)
+	if _, err := collection.InsertOne(context.TODO(), e); err != nil {
+		return fmt.Errorf("insert error: %q", err)
+	}
+
+	return nil
+}
+
+// GetPipelines returns all pipelines in the database.
 func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 	var pipelines []Pipeline
 
@@ -116,6 +133,21 @@ func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 	itens.Close(context.Background())
 
 	return pipelines, nil
+}
+
+// GetPipeline returns a pipeline from database.
+func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
+	var pipeline Pipeline
+
+	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
+	err := collection.FindOne(context.TODO(), bson.D{{Key: "id", Value: id}}).Decode(&pipeline)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return Pipeline{}, nil
+		}
+		return Pipeline{}, fmt.Errorf("error getting pipeline for id: %s. Find error: %q", id, err)
+	}
+	return pipeline, nil
 }
 
 // Disconnect makes the database disconnection.

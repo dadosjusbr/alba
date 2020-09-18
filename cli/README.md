@@ -58,18 +58,15 @@ O campo do [executor.Pipeline.DefaultBaseDir](https://github.com/dadosjusbr/exec
     {
         "name": "Coleta",
         "dir": "trt13",
-        "build-env": "GIT_COMMIT=",
-        "run-env": "--mes=,--ano="
     },
     {
         "name": "Empacotamento",
         "dir": "packager",
-        "run-env": "OUTPUT_FOLDER=/output"
     },
     {
         "name": "Armazenamento",
         "dir": "store",
-        "run-env": "OUTPUT_FOLDER=/output,MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
+        "run-env": "MONGODB_URI=,MONGODB_DBNAME=,MONGODB_MICOL=,MONGODB_AGCOL=,SWIFT_USERNAME=,SWIFT_APIKEY=,SWIFT_AUTHURL=,SWIFT_DOMAIN=,SWIFT_CONTAINER=" 
     }
 ],
 "error-handler": {
@@ -89,18 +86,15 @@ O campo do [executor.Pipeline.DefaultBaseDir](https://github.com/dadosjusbr/exec
 "limit-year-backward": 2018
 }
 ```
-Os parâmetros `GIT_COMMIT`, `--mes` e `--ano` são padrões do contexto do [DadosJusBR](https://github.com/dadosjusbr/coletores/blob/master/TUTORIAL.md). Os valores desses parâmetros podem variar ao longo do tempo e a cada execução, por isso, na definição de um pipeline DadosJusBr deixamos seus valores vazios:
 
-``` json
-"default-build-env": "GIT_COMMIT=",
-"default-build-env": "--mes=,--ano="
-``` 
+Por padrão passamos para **todos** os estágios as seguintes variáveis de ambiente:
+- `GIT_COMMIT` para o `build-env`
+-  `YEAR`, `OUTPUT_FOLDER`, `MONTH` para o `run-env`
 
-E consideramos as seguintes regras de negócio:
-- Se o `GIT_COMMIT` não estiver preenchido o pacote cli faz o download a última versão do código (a partir do endereço em `repo`) e carrega a informação com o `git rev-list -1 HEAD`.
-- No caso de `--mes` e `--ano`:
-    - Quando a execução for iniciada via cli, os valores devem ser passados por parâmetro [no comando]().
-    - Quando a execução for iniciada pelo [worker](), ele irá avaliar quais são os valores a partir de execuções anteriores.
+Elas são sobrescritas caso sejam preenchidas na definição do pipeline.
+- O GIT_COMMIT é carregado a partir da última versão do código, que é baixada a cada execução
+- O valor padrão do `OUTPUT_FOLDER` é `"/output"`.
+- `YEAR` e `MONTH` são carregadas a partir de variáveis de ambiente.
 
 ---
 
@@ -109,7 +103,7 @@ E consideramos as seguintes regras de negócio:
 | Para que a CLI funcione corretamente é preciso que as instruções para a [configuração do ambiente](https://github.com/dadosjusbr/alba/blob/master/README.md) tenham sido concluídas. |
 |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 
-Fazer o build do projeto criando um executável de nome **alba**:
+Fazendo o build do projeto criando um executável de nome **alba**:
 
 `go build -o alba`
 
@@ -118,9 +112,13 @@ Fazer o build do projeto criando um executável de nome **alba**:
 `./alba`
 
 ### Cadastrar um Pipeline
-Passando como paraâmetro o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/collector/.pipeline.json). 
+Passando como paraâmetro o [arquivo de exemplo](https://github.com/dadosjusbr/alba/blob/master/cli/pipeline/pipeline-example.json). 
 Nesse arquivo descrevemos os pipelines para os coletores do [Tribunal Regional do Trabalho - 13ª região](https://github.com/dadosjusbr/coletores/tree/master/trt13) e [Ministério Público da Paraíba](https://github.com/dadosjusbr/coletores/tree/master/mppb).
 
 `./alba add --from-file pipeline/pipeline-example.json`
 
-### Executando um Pipeline
+### Executando um Pipeline 
+
+`./alba run --id trt13`
+
+Sendo `trt13` o id do pipeline para o Tribunal Regional do Trabalho - 13ª região.

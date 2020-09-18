@@ -4,6 +4,7 @@ go 1.14
 
 require (
 	github.com/dadosjusbr/executor v1.0.1-0.20200904000256-6796d5d9b72f
+	github.com/go-git/go-git/v5 v5.1.0
 	github.com/labstack/echo/v4 v4.1.16
 	github.com/matryer/is v1.3.0
 	github.com/steinfletcher/apitest v1.4.6

@@ -1,0 +1,56 @@
+[
+    {
+    "pipeline": {
+        "name": "Tribunal Regional do Trabalho 13ª Região",
+        "stages":[
+            {
+                "name": "Coleta",
+                "dir": "trt13"
+            },
+            {
+                "name": "Empacotamento",
+                "dir": "packager"
+            },
+            {
+                "name": "Armazenamento",
+                "dir": "store",
+                "run-env": {
+                    "MONGODB_URI":"",
+                    "MONGODB_DBNAME":"",
+                    "MONGODB_MICOL":"",
+                    "MONGODB_AGCOL":"",
+                    "SWIFT_USERNAME":"",
+                    "SWIFT_APIKEY":"",
+                    "SWIFT_AUTHURL":"",
+                    "SWIFT_DOMAIN":"",
+                    "SWIFT_CONTAINER":"" 
+                }
+            }
+        ],
+        "error-handler": {
+            "name": "Armazenamento de Erros",
+            "dir": "store-error",
+            "run-env": {
+                "MONGODB_URI":"",
+                "MONGODB_DBNAME":"",
+                "MONGODB_MICOL":"",
+                "MONGODB_AGCOL":"",
+                "SWIFT_USERNAME":"",
+                "SWIFT_APIKEY":"",
+                "SWIFT_AUTHURL":"",
+                "SWIFT_DOMAIN":"",
+                "SWIFT_CONTAINER":"" 
+            }
+        }
+    },
+    "id": "trt13",
+    "entity": "Tribunal Regional do Trabalho 13ª Região",
+    "city": "João Pessoa",
+    "fu": "PB",
+    "repo": "github.com/dadosjusbr/coletores/url/inexistente",
+    "frequency": 30,
+    "start-day": 5,
+    "limit-month-backward": 2,
+    "limit-year-backward": 2018
+    }
+]
