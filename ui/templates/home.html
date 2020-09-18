@@ -57,7 +57,7 @@
     <section id="collectors">
         <div class="container">
             <h2>
-                <small>Coletores disponíveis</small>
+                <small>Pipelines cadastrados</small>
             </h2>
 
             <div class="table-responsive-lg">
@@ -70,14 +70,14 @@
                             <th scope="col">Github</th>
                         </tr>
                     </thead>
-                    {{ range .Collectors }}
+                    {{ range .Pipelines }}
                     <tbody>
                         <tr>
                             <td>{{.Entity}}</td>
                             <td>{{.City}}</td>
                             <td>{{.FU}}</td>
                             <td>
-                                <a href=" {{.Path}}"><img src="static/github32px.png" class="img-fluid"
+                                <a href=" {{.Repo}}"><img src="static/github32px.png" class="img-fluid"
                                         alt="Código no GitHub"></a>
                             </td>
                         </tr>

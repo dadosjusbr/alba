@@ -9,18 +9,18 @@ import (
 )
 
 func index(f finder, c echo.Context) error {
-	results, err := f.GetCollectors()
+	results, err := f.GetPipelines()
 	if err != nil {
 		c.Logger().Error(err)
 		return echo.ErrInternalServerError
 	}
-	// TODO: Retornar página hmtl indicando que não existem resultados.
+
 	if len(results) == 0 {
-		c.Render(http.StatusOK, "home.html", "")
+		return echo.ErrNotFound
 	}
 
 	data := struct {
-		Collectors []storage.Collector
+		Pipelines []storage.Pipeline
 	}{
 		results,
 	}
@@ -29,15 +29,23 @@ func index(f finder, c echo.Context) error {
 }
 
 func viewExecutions(f finder, c echo.Context) error {
-	// Mockup.
-	data := executionDetails{
-		Entity: "Nome do órgão",
-		Executions: []execution{
-			{Date: "10/01/2020", Status: "Finalizado com sucesso", Result: "link"},
-			{Date: "10/02/2020", Status: "Finalizado com sucesso", Result: "link"},
-			{Date: "10/03/2020", Status: "Finalizado com erro", Result: "link"},
-			{Date: "11/03/2020", Status: "Finalizado com sucesso", Result: "link"},
-		},
+	id := c.Param("id")
+	results, err := f.GetExecutionsByID(id)
+	if err != nil {
+		c.Logger().Error(err)
+		return echo.ErrInternalServerError
+	}
+
+	if len(results) == 0 {
+		return echo.ErrNotFound
+	}
+
+	data := struct {
+		Executions []storage.Execution
+		Entity     string
+	}{
+		results,
+		results[0].Entity,
 	}
 
 	return c.Render(http.StatusOK, "executionsDetails.html", data)
