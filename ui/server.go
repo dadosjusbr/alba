@@ -34,10 +34,10 @@ type finder interface {
 
 // URLs definition.
 const (
-	apiPipelines    = "/alba/api/pipelines"
-	apiPipelineByID = "/alba/api/pipeline/:id"
-	apiRuns         = "/alba/api/runs"
-	apiRunsByid     = "/alba/api/runs/:id"
+	apiPipelines    = "/alba/api/v1/pipelines"
+	apiPipelineByID = "/alba/api/v1/pipeline/:id"
+	apiRuns         = "/alba/api/v1/runs"
+	apiRunsByid     = "/alba/api/v1/runs/:id"
 	home            = "/alba"
 	runs            = "/alba/:id"
 )
