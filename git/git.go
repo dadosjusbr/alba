@@ -1,4 +1,4 @@
-package alba
+package git
 
 import (
 	"fmt"
