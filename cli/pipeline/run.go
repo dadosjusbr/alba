@@ -2,11 +2,12 @@ package pipeline
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/urfave/cli/v2"
 
-	"github.com/dadosjusbr/alba"
+	"github.com/dadosjusbr/alba/git"
 	"github.com/dadosjusbr/alba/storage"
 )
 
@@ -20,14 +21,29 @@ type runCommand struct {
 }
 
 // NewRunCommand creates a new command to run a pipeline.
-func NewRunCommand(m managerExecution) *cli.Command {
-	e := runCommand{manager: m}
+func NewRunCommand() *cli.Command {
+	uri := os.Getenv("MONGODB")
+	if uri == "" {
+		log.Fatal("error trying get environment variable: $MONGODB is empty")
+	}
+	client, err := storage.NewDBClient(uri)
+	if err != nil {
+		log.Fatal(err)
+	}
+	e := runCommand{manager: client}
 	return &cli.Command{Name: "run",
 		Usage:  "Run a pipeline registered in the database.",
 		Action: e.do,
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "id", Usage: "Pipeline ID.", Required: true},
-		}}
+		},
+		Before: func(c *cli.Context) error {
+			return client.Connect()
+		},
+		After: func(c *cli.Context) error {
+			return client.Disconnect()
+		},
+	}
 }
 
 func (r runCommand) do(c *cli.Context) error {
@@ -54,7 +70,7 @@ func (r runCommand) do(c *cli.Context) error {
 	}
 	var commit string
 	p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", baseDir, p.Repo)
-	commit, err = alba.CloneRepository(p.Pipeline.DefaultBaseDir, fmt.Sprintf("https://%s", p.Repo))
+	commit, err = git.CloneRepository(p.Pipeline.DefaultBaseDir, fmt.Sprintf("https://%s", p.Repo))
 	if err != nil {
 		return fmt.Errorf("error running pipeline: %q", err)
 	}

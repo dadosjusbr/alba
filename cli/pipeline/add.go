@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -51,14 +52,34 @@ func (a addCommand) do(c *cli.Context) error {
 }
 
 // NewAddCommand creates a new command to add a pipeline to the database.
-func NewAddCommand(i inserter) *cli.Command {
-	a := addCommand{inserter: i}
+func NewAddCommand() *cli.Command {
+	uri := os.Getenv("MONGODB")
+	if uri == "" {
+		log.Fatal("error trying get environment variable: $MONGODB is empty")
+	}
+	client, err := storage.NewDBClient(uri)
+	if err != nil {
+		log.Fatal(err)
+	}
+	c := newAddCommand(client)
+	c.Before = func(c *cli.Context) error {
+		return client.Connect()
+	}
+	c.After = func(c *cli.Context) error {
+		return client.Disconnect()
+	}
+	return c
+}
+
+func newAddCommand(i inserter) *cli.Command {
+	a := addCommand{i}
 	return &cli.Command{Name: "add",
-		Usage:  "Register one or more pipelines from a json file.",
-		Action: a.do,
+		Usage: "Register one or more pipelines from a json file.",
 		Flags: []cli.Flag{
 			&cli.StringFlag{Name: "from-file", Usage: "File path containing the spec of the pipeline to be added.", Required: true},
-		}}
+		},
+		Action: a.do,
+	}
 }
 
 func fromFile(path string) ([]storage.Pipeline, error) {
