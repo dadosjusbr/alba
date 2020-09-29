@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/dadosjusbr/alba"
+	"github.com/dadosjusbr/alba/git"
 	"github.com/dadosjusbr/alba/storage"
 )
 
@@ -60,7 +60,7 @@ func run(p storage.Pipeline, db *storage.DBClient) error {
 
 	var commit string
 	p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", baseDir, p.Repo)
-	commit, err := alba.CloneRepository(p.Pipeline.DefaultBaseDir, fmt.Sprintf("https://%s", p.Repo))
+	commit, err := git.CloneRepository(p.Pipeline.DefaultBaseDir, fmt.Sprintf("https://%s", p.Repo))
 	if err != nil {
 		return fmt.Errorf("error running pipeline: %q", err)
 	}
