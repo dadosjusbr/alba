@@ -44,6 +44,6 @@ func TestAdd_NoexistentURL(t *testing.T) {
 
 func newAddApp() *cli.App {
 	app := cli.NewApp()
-	app.Commands = []*cli.Command{NewAddCommand(fakeInserter{})}
+	app.Commands = []*cli.Command{newAddCommand(fakeInserter{})}
 	return app
 }
