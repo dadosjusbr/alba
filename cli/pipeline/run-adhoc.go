@@ -35,8 +35,5 @@ func NewRunAdhocCommand() *cli.Command {
 	return &cli.Command{Name: "run-adhoc",
 		Usage:  "Run a pipeline registered described from the standard input",
 		Action: e.do,
-		Flags: []cli.Flag{
-			&cli.StringFlag{Name: "id", Usage: "Pipeline ID.", Required: true},
-		},
 	}
 }
