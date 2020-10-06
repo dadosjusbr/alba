@@ -22,14 +22,7 @@ type runCommand struct {
 
 // NewRunCommand creates a new command to run a pipeline.
 func NewRunCommand() *cli.Command {
-	uri := os.Getenv("MONGODB")
-	if uri == "" {
-		log.Fatal("error trying get environment variable: $MONGODB is empty")
-	}
-	client, err := storage.NewDBClient(uri)
-	if err != nil {
-		log.Fatal(err)
-	}
+	var client *storage.DBClient
 	e := runCommand{manager: client}
 	return &cli.Command{Name: "run",
 		Usage:  "Run a pipeline registered in the database.",
@@ -38,6 +31,15 @@ func NewRunCommand() *cli.Command {
 			&cli.StringFlag{Name: "id", Usage: "Pipeline ID.", Required: true},
 		},
 		Before: func(c *cli.Context) error {
+			uri := os.Getenv("MONGODB")
+			if uri == "" {
+				log.Fatal("[run command] error trying get environment variable: $MONGODB is empty")
+			}
+			var err error
+			client, err := storage.NewDBClient(uri)
+			if err != nil {
+				log.Fatal(err)
+			}
 			return client.Connect()
 		},
 		After: func(c *cli.Context) error {
