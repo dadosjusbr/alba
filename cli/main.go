@@ -13,7 +13,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Alba"
 	app.Usage = "A tool for manage the process of continuous data release through configurable pipelines runs."
-	app.Commands = []*cli.Command{pipeline.NewAddCommand(), pipeline.NewRunCommand()}
+	app.Commands = []*cli.Command{pipeline.NewAddCommand(), pipeline.NewRunCommand(), pipeline.NewRunAdhocCommand()}
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)
