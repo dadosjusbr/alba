@@ -25,7 +25,7 @@ const (
 	apiPipelines    = "/alba/api/v1/pipelines"
 	apiPipelineByID = "/alba/api/v1/pipeline/:id"
 	apiRuns         = "/alba/api/v1/runs"
-	apiRunsByid     = "/alba/api/v1/runs/:id"
+	apiRunsByID     = "/alba/api/v1/runs/:id"
 )
 
 func newApp(dbClient *storage.DBClient) *application {
