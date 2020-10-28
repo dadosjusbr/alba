@@ -7,25 +7,6 @@
         {
             "name": "Coleta",
             "dir": "trt13"
-        },
-        {
-            "name": "Empacotamento",
-            "dir": "packager"
-        },
-        {
-            "name": "Armazenamento",
-            "dir": "store",
-            "run-env": {
-                "MONGODB_URI":"mongodb+srv://joh:imp12345@johcluster-4th0m.gcp.mongodb.net/test?retryWrites=true&w=majority",
-                "MONGODB_DBNAME":"dadosjusbr",
-                "MONGODB_MICOL":"mi",
-                "MONGODB_AGCOL":"ag",
-                "SWIFT_USERNAME":"joeberth",
-                "SWIFT_APIKEY":"dadosjus123",
-                "SWIFT_AUTHURL":"https://cloud5.lsd.ufcg.edu.br:5000/v3",
-                "SWIFT_DOMAIN":"Geral",
-                "SWIFT_CONTAINER":"dadosjusbr" 
-            }
         }
     ],
     "error-handler": {
