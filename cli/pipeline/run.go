@@ -1,10 +1,12 @@
 package pipeline
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2"
 
 	"github.com/dadosjusbr/alba/git"
@@ -57,11 +59,14 @@ func (r runCommand) do(c *cli.Context) error {
 	if len(p.Repo) == 0 {
 		return fmt.Errorf("error running pipeline. there is no pipeline registered for id: %s", id)
 	}
-
-	baseDir := os.Getenv("BASEDIR")
-	if baseDir == "" {
-		return fmt.Errorf("error running pipeline. BASEDIR env var can not be empty")
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env to read.")
 	}
+	/*
+		baseDir := os.Getenv("BASEDIR")
+		if baseDir == "" {
+			return fmt.Errorf("error running pipeline. BASEDIR env var can not be empty")
+		}*/
 	month := os.Getenv("MONTH")
 	if month == "" {
 		return fmt.Errorf("error running pipeline. MONTH env var can not be empty")
@@ -71,7 +76,8 @@ func (r runCommand) do(c *cli.Context) error {
 		return fmt.Errorf("error running pipeline. YEAR env var can not be empty")
 	}
 	var commit string
-	p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", baseDir, p.Repo)
+	fmt.Println(p.Pipeline.DefaultBaseDir)
+	//p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", baseDir, p.Repo)
 	commit, err = git.CloneRepository(p.Pipeline.DefaultBaseDir, fmt.Sprintf("https://%s", p.Repo))
 	if err != nil {
 		return fmt.Errorf("error running pipeline: %q", err)
@@ -99,6 +105,9 @@ func (r runCommand) do(c *cli.Context) error {
 		Entity:         p.Entity,
 		ID:             p.ID,
 	}
+	s, _ := json.MarshalIndent(e, "", "\t")
+	fmt.Println(string(s))
+
 	r.manager.InsertExecution(e)
 	return nil
 }

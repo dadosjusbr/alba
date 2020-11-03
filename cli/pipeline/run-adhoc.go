@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/dadosjusbr/alba/storage"
@@ -18,10 +19,22 @@ func (m adhocStdinManager) GetPipeline(string) (storage.Pipeline, error) {
 	if err != nil {
 		return storage.Pipeline{}, fmt.Errorf("error reading pipeline description from stdin:%q", err)
 	}
+	dir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var p storage.Pipeline
 	if err := json.Unmarshal(b, &p); err != nil {
 		return storage.Pipeline{}, fmt.Errorf("error unmarshaling pipeline description from stdin. Err:\"%q\"\nDescription:\"%s\"", err, string(b))
 	}
+
+	h, _ := json.MarshalIndent(p, "", "\t")
+	fmt.Println(string(h))
+
+	p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", dir, p.Repo)
+	fmt.Println(p.Pipeline.DefaultBaseDir)
+
 	return p, nil
 }
 

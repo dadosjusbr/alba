@@ -1,25 +1,45 @@
-
-{
-    "name": "Tribunal Regional do Trabalho 13ª Região",
-    "default-build-env": {"OUTPUT_FOLDER" : "/output"},
-    "default-run-env":  {"OUTPUT_FOLDER" : "/output"},
+{   
+    "pipeline": {
+    "name": "stage-go",
+    "default-build-env": {
+        "URL": "https://dadosjusbr.org/api/v1/orgao/trt13/2020/4",
+        "OUTPUT_FOLDER":"/output"
+    },
     "stages":[
         {
-            "name": "Coleta",
-            "dir": "trt13"
+            "name": "stage-go",
+            "dir": "tutorial/stage-go",
+            "run-env": {
+                "URL": "https://dadosjusbr.org/api/v1/orgao/trt13/2020/4",
+                "OUTPUT_FOLDER":"/output"
+            }
         }
     ],
     "error-handler": {
         "name": "Armazenamento de Erros",
-        "dir": "store-error"
-    },
-    "id": "trt13",
-    "entity": "Tribunal Regional do Trabalho 13ª Região",
-    "city": "João Pessoa",
-    "fu": "PB",
-    "repo": "github.com/dadosjusbr/coletores",
-    "frequency": 30,
-    "start-day": 5,
-    "limit-month-backward": 2,
-    "limit-year-backward": 2018
+        "dir": "store-error",
+        "run-env": {
+            "MONGODB_URI":"mongodb+srv://joh:imp12345@johcluster-4th0m.gcp.mongodb.net/test?retryWrites=true&w=majority",
+            "MONGODB_DBNAME":"dadosjusbr",
+            "MONGODB_MICOL":"mi",
+            "MONGODB_AGCOL":"ag",
+            "SWIFT_USERNAME":"joeberth",
+            "SWIFT_APIKEY":"dadosjus123",
+            "SWIFT_AUTHURL":"https://cloud5.lsd.ufcg.edu.br:5000/v3",
+            "SWIFT_DOMAIN":"Geral",
+            "SWIFT_CONTAINER":"dadosjusbr" 
+        }
     }
+},
+"id": "stagego",
+"entity": "Stage-go",
+"city": "João Pessoa",
+"fu": "PB",
+"repo": "github.com/dadosjusbr/executor",
+"frequency": 30,
+"start-day": 5,
+"limit-month-backward": 2,
+"limit-year-backward": 2018
+}
+
+
