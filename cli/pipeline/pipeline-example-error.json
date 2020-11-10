@@ -15,15 +15,15 @@
                 "name": "Armazenamento",
                 "dir": "store",
                 "run-env": {
-                    "MONGODB_URI":"",
-                    "MONGODB_DBNAME":"",
-                    "MONGODB_MICOL":"",
-                    "MONGODB_AGCOL":"",
-                    "SWIFT_USERNAME":"",
-                    "SWIFT_APIKEY":"",
-                    "SWIFT_AUTHURL":"",
-                    "SWIFT_DOMAIN":"",
-                    "SWIFT_CONTAINER":"" 
+                "MONGODB_URI":"",
+                "MONGODB_DBNAME":"",
+                "MONGODB_MICOL":"",
+                "MONGODB_AGCOL":"",
+                "SWIFT_USERNAME":"",
+                "SWIFT_APIKEY":"",
+                "SWIFT_AUTHURL":"",
+                "SWIFT_DOMAIN":"",
+                "SWIFT_CONTAINER":"" 
                 }
             }
         ],

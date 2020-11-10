@@ -20,6 +20,8 @@ github.com/dadosjusbr/alba/storage v0.0.0-20201013221617-0aab7e186849 h1:2bFavJj
 github.com/dadosjusbr/alba/storage v0.0.0-20201013221617-0aab7e186849/go.mod h1:T01BciSsXHeuD2DH7aGwcCDKTjcAKWOV51KIq7HXfo0=
 github.com/dadosjusbr/executor v1.0.0 h1:WJXio3osm9a267kjvWTuHixRXoqteDm1YKn9Ccj0PRQ=
 github.com/dadosjusbr/executor v1.0.0/go.mod h1:JxFj7HEfDeQ0ws2qSGS9rb5mMsC2czuEvkRArcp/Jl0=
+github.com/dadosjusbr/executor v1.0.1-0.20200904000256-6796d5d9b72f h1:24o+I2vl81LLNiWDSjuC4UoYlEI1iKmvJ+UVGwwMZAc=
+github.com/dadosjusbr/executor v1.0.1-0.20200904000256-6796d5d9b72f/go.mod h1:JxFj7HEfDeQ0ws2qSGS9rb5mMsC2czuEvkRArcp/Jl0=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/emirpasic/gods v1.12.0 h1:QAUIPSaCu4G+POclxeqb3F+WPpdKqFGlw36+yOzGlrg=

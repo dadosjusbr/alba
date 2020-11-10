@@ -1,7 +1,6 @@
 package pipeline
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -76,7 +75,6 @@ func (r runCommand) do(c *cli.Context) error {
 		return fmt.Errorf("error running pipeline. YEAR env var can not be empty")
 	}
 	var commit string
-	fmt.Println(p.Pipeline.DefaultBaseDir)
 	//p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", baseDir, p.Repo)
 	commit, err = git.CloneRepository(p.Pipeline.DefaultBaseDir, fmt.Sprintf("https://%s", p.Repo))
 	if err != nil {
@@ -105,8 +103,6 @@ func (r runCommand) do(c *cli.Context) error {
 		Entity:         p.Entity,
 		ID:             p.ID,
 	}
-	s, _ := json.MarshalIndent(e, "", "\t")
-	fmt.Println(string(s))
 
 	r.manager.InsertExecution(e)
 	return nil
