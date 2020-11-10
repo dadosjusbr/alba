@@ -13,8 +13,7 @@
         {
             "name": "stage-python",
             "dir": "tutorial/stage-python",
-            "run-env": {
-                "URL": "https://dadosjusbr.org/api/v1/orgao/trt13/2020/4",
+            "run-env":
                 "OUTPUT_FOLDER":"/output"
             }
         }
