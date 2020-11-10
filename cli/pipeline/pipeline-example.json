@@ -1,110 +1,30 @@
-[
-    {
+{   
     "pipeline": {
-        "name": "Tribunal Regional do Trabalho 13ª Região",
-        "stages":[
-            {
-                "name": "Coleta",
-                "dir": "trt13"
-            },
-            {
-                "name": "Empacotamento",
-                "dir": "packager"
-            },
-            {
-                "name": "Armazenamento",
-                "dir": "store",
-                "run-env": {
-                    "MONGODB_URI":"",
-                    "MONGODB_DBNAME":"",
-                    "MONGODB_MICOL":"",
-                    "MONGODB_AGCOL":"",
-                    "SWIFT_USERNAME":"",
-                    "SWIFT_APIKEY":"",
-                    "SWIFT_AUTHURL":"",
-                    "SWIFT_DOMAIN":"",
-                    "SWIFT_CONTAINER":"" 
-                }
-            }
-        ],
-        "error-handler": {
-            "name": "Armazenamento de Erros",
-            "dir": "store-error",
+    "name": "stage-go",
+    "stages":[
+        {
+            "name": "stage-go",
+            "dir": "tutorial/stage-go",
             "run-env": {
-                "MONGODB_URI":"",
-                "MONGODB_DBNAME":"",
-                "MONGODB_MICOL":"",
-                "MONGODB_AGCOL":"",
-                "SWIFT_USERNAME":"",
-                "SWIFT_APIKEY":"",
-                "SWIFT_AUTHURL":"",
-                "SWIFT_DOMAIN":"",
-                "SWIFT_CONTAINER":"" 
+                "URL": "https://dadosjusbr.org/api/v1/orgao/trt13/2020/4",
+                "OUTPUT_FOLDER":"/output"
+            }
+        },
+        {
+            "name": "stage-python",
+            "dir": "tutorial/stage-python",
+            "run-env":
+                "OUTPUT_FOLDER":"/output"
             }
         }
+    ]
     },
-    "id": "trt13",
-    "entity": "Tribunal Regional do Trabalho 13ª Região",
-    "city": "João Pessoa",
+    "id": "stagego",
+    "entity": "Stage-go",
     "fu": "PB",
-    "repo": "github.com/dadosjusbr/coletores",
+    "repo": "github.com/dadosjusbr/executor",
     "frequency": 30,
     "start-day": 5,
     "limit-month-backward": 2,
     "limit-year-backward": 2018
-    },
-    {
-        "pipeline": {
-            "name": "Ministério Público da Paraíba",
-            "stages":[
-                {
-                    "name": "Coleta",
-                    "dir": "mppb"
-                },
-                {
-                    "name": "Empacotamento",
-                    "dir": "packager"
-                },
-                {
-                    "name": "Armazenamento",
-                    "dir": "store",
-                    "run-env": {
-                        "MONGODB_URI":"",
-                        "MONGODB_DBNAME":"",
-                        "MONGODB_MICOL":"",
-                        "MONGODB_AGCOL":"",
-                        "SWIFT_USERNAME":"",
-                        "SWIFT_APIKEY":"",
-                        "SWIFT_AUTHURL":"",
-                        "SWIFT_DOMAIN":"",
-                        "SWIFT_CONTAINER":"" 
-                    }
-                }
-            ],
-            "error-handler": {
-                "name": "Armazenamento de Erros",
-                "dir": "store-error",
-                "run-env": {
-                    "MONGODB_URI":"",
-                    "MONGODB_DBNAME":"",
-                    "MONGODB_MICOL":"",
-                    "MONGODB_AGCOL":"",
-                    "SWIFT_USERNAME":"",
-                    "SWIFT_APIKEY":"",
-                    "SWIFT_AUTHURL":"",
-                    "SWIFT_DOMAIN":"",
-                    "SWIFT_CONTAINER":"" 
-                }            
-            }
-        },
-        "id": "mppb",
-        "entity": "Ministério Público da Paraíba",
-        "city": "João Pessoa",
-        "fu": "PB",
-        "repo": "github.com/dadosjusbr/coletores",
-        "frequency": 30,
-        "start-day": 5,
-        "limit-month-backward": 2,
-        "limit-year-backward": 2018
-        }
-]
+}

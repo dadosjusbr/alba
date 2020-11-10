@@ -29,11 +29,7 @@ func (m adhocStdinManager) GetPipeline(string) (storage.Pipeline, error) {
 		return storage.Pipeline{}, fmt.Errorf("error unmarshaling pipeline description from stdin. Err:\"%q\"\nDescription:\"%s\"", err, string(b))
 	}
 
-	h, _ := json.MarshalIndent(p, "", "\t")
-	fmt.Println(string(h))
-
 	p.Pipeline.DefaultBaseDir = fmt.Sprintf("%s/%s", dir, p.Repo)
-	fmt.Println(p.Pipeline.DefaultBaseDir)
 
 	return p, nil
 }
