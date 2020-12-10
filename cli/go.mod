@@ -8,7 +8,7 @@ require (
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dadosjusbr/alba/git v0.0.0-20201123152519-98eb509daccf
 	github.com/dadosjusbr/alba/storage v0.0.0-20201123152519-98eb509daccf
-	github.com/dadosjusbr/executor v0.0.0-20201123194348-e6ea0bd6ba8f // indirect
+	github.com/dadosjusbr/executor v0.0.0-20201210185536-53bc81e3ecc7 // indirect
 	github.com/go-git/go-git/v5 v5.2.0 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/imdario/mergo v0.3.11 // indirect
