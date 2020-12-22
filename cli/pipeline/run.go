@@ -82,13 +82,17 @@ func (r runCommand) do(c *cli.Context) error {
 	}
 
 	defaultBuildEnv := map[string]string{
-		"GIT_COMMIT": commit,
+		"OUTPUT_FOLDER": "/output",
+		"MONTH":         month,
+		"YEAR":          year,
+		"GIT_COMMIT":    commit,
 	}
 
 	defaultRunEnv := map[string]string{
 		"OUTPUT_FOLDER": "/output",
 		"MONTH":         month,
 		"YEAR":          year,
+		"GIT_COMMIT":    commit,
 	}
 
 	for pos, stage := range p.Pipeline.Stages {
