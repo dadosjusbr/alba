@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-const database = "dadosjusbr-alba"
+const database = "alba"
 const pipelineCollection = "pipeline"
 const executionCollection = "execution"
 
@@ -93,7 +93,6 @@ func setIndexesPipeline(pipeline *mongo.Collection) error {
 // InsertPipeline inserts a pipeline in the database.
 func (c *DBClient) InsertPipeline(p Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
-
 	if _, err := collection.InsertOne(context.TODO(), p); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
@@ -149,31 +148,6 @@ func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
 		return Pipeline{}, fmt.Errorf("error getting pipeline for id: %s. Find error: %q", id, err)
 	}
 	return pipeline, nil
-}
-
-// GetPipelinesByDay returns all pipelines that have the start-day equal the param.
-func (c *DBClient) GetPipelinesByDay(day int) ([]Pipeline, error) {
-	var pipelines []Pipeline
-
-	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
-	itens, err := collection.Find(context.TODO(), bson.D{{Key: "start-day", Value: day}})
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return []Pipeline{}, nil
-		}
-		return nil, fmt.Errorf("error getting pipelines. Find error: %q", err)
-	}
-
-	for itens.Next(context.Background()) {
-		var item Pipeline
-		if err := itens.Decode(&item); err != nil {
-			return nil, fmt.Errorf("error getting pipelines. Decode error: %q", err)
-		}
-		pipelines = append(pipelines, item)
-	}
-	itens.Close(context.Background())
-
-	return pipelines, nil
 }
 
 // GetExecutions returns all executions in the database.
