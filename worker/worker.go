@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/smtp"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/dadosjusbr/alba/git"
 	"github.com/dadosjusbr/alba/storage"
@@ -11,6 +14,7 @@ import (
 
 func main() {
 	var pipelines []storage.Pipeline
+	var finalPipelines []storage.Pipeline
 
 	uri := os.Getenv("MONGODB")
 	if uri == "" {
@@ -27,12 +31,27 @@ func main() {
 
 	}
 
-	pipelines = append(pipelines, getPipelinesToExecuteNow(dbClient)...)
-	pipelines = append(pipelines, getPipelinesThatFailed(dbClient)...)
-	pipelines = append(pipelines, getPipelinesForCompleteHistory(dbClient)...)
+	pipelines, err = getPipelinesToExecuteToday(dbClient)
+	if err != nil {
+		log.Fatal(err)
+	}
+	finalPipelines = append(finalPipelines, pipelines...)
+
+	// pipelines, err = getPipelinesThatFailed(dbClient)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// final_pipelines = append(final_pipelines, pipelines...)
+
+	// pipelines, err = getPipelinesForCompleteHistory(dbClient)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// final_pipelines = append(final_pipelines, pipelines...)
 
 	// Algoritmo: shuffle na lista + cap
-	toExecuteNow := prioritizeAndLimit(pipelines)
+	toExecuteNow := prioritizeAndLimit(finalPipelines)
+
 	for _, p := range toExecuteNow {
 		err := run(p, dbClient)
 		if err != nil {
@@ -48,14 +67,13 @@ func run(p storage.Pipeline, db *storage.DBClient) error {
 		return fmt.Errorf("error running pipeline. BASEDIR env var can not be empty")
 	}
 
-	month := os.Getenv("MONTH")
-	if month == "" {
-		return fmt.Errorf("error running pipeline. MONTH env var can not be empty")
-	}
-
-	year := os.Getenv("YEAR")
-	if year == "" {
-		return fmt.Errorf("error running pipeline. YEAR env var can not be empty")
+	month := int(time.Now().Month())
+	year := time.Now().Year()
+	if month == 1 {
+		month = 12
+		year = year - 1
+	} else {
+		month = month - 1
 	}
 
 	var commit string
@@ -71,8 +89,8 @@ func run(p storage.Pipeline, db *storage.DBClient) error {
 
 	defaultRunEnv := map[string]string{
 		"OUTPUT_FOLDER": "/output",
-		"MONTH":         month,
-		"YEAR":          year,
+		"MONTH":         strconv.Itoa(month),
+		"YEAR":          strconv.Itoa(year),
 	}
 
 	for pos, stage := range p.Pipeline.Stages {
@@ -88,6 +106,13 @@ func run(p storage.Pipeline, db *storage.DBClient) error {
 		ID:             p.ID,
 	}
 	db.InsertExecution(e)
+
+	receiver := "default@dadosjusbr.com"
+	if err := sendEmail(receiver, e.Entity, e.PipelineResult.Status); err != nil {
+		return fmt.Errorf("error after running pipeline. %q", err)
+
+	}
+
 	return nil
 }
 
@@ -105,14 +130,20 @@ func mergeEnv(defaultEnv, stageEnv map[string]string) map[string]string {
 
 func prioritizeAndLimit(list []storage.Pipeline) []storage.Pipeline {
 
-	return nil
+	return list
 }
 
-// Assumindo que o passado não interessa, quais pipelines devem ser
-// executados no dia/hora atual
-func getPipelinesToExecuteNow(db *storage.DBClient) []storage.Pipeline {
+func getPipelinesToExecuteToday(db *storage.DBClient) ([]storage.Pipeline, error) {
+	var results []storage.Pipeline
 
-	return nil
+	day := time.Now().Day()
+	fmt.Println(day)
+	results, err := db.GetPipelinesByDay(day)
+	if err != nil {
+		return []storage.Pipeline{}, fmt.Errorf("error getting pipelines by day: %q", err)
+	}
+
+	return results, nil
 }
 
 // Apenas as execuções que devem acontecer por causa do mecanismo de
@@ -125,6 +156,41 @@ func getPipelinesThatFailed(db *storage.DBClient) []storage.Pipeline {
 // Apenas execuções de devem acontecer para completar o histórico. Devemos
 // ignorar casos em que já houve tentativa de execução, quer seja sucesso ou falha.
 func getPipelinesForCompleteHistory(db *storage.DBClient) []storage.Pipeline {
+
+	return nil
+}
+
+func sendEmail(receiver, entity, status string) error {
+	sender := os.Getenv("SENDER")
+	if sender == "" {
+		return fmt.Errorf("setup error sending email. SENDER env var can not be empty")
+	}
+
+	password := os.Getenv("SENDER_PASSWORD")
+	if password == "" {
+		return fmt.Errorf("setup error sending email. SENDER_PASSWORD env var can not be empty")
+	}
+
+	smtpHost := "smtp.gmail.com"
+	smtpPort := "587"
+	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
+
+	auth := smtp.PlainAuth("", sender, password, smtpHost)
+
+	receivers := []string{
+		receiver,
+	}
+
+	message := []byte(fmt.Sprintf("To: %v \r\n"+
+		"Subject: [DadosJusBR: Alba] Extraímos novos dados! \r\n"+
+		"\r\n"+
+		"Olá, sou a Alba e acabei de executar o pipeline para o órgão: %s com status: %s!\n"+
+		"Acompanhe mais sobre o meu trabalho no site: https://dadosjusbr.org/", receivers, entity, status))
+
+	err := smtp.SendMail(addr, auth, sender, receivers, message)
+	if err != nil {
+		return fmt.Errorf("error sending email: %q", err)
+	}
 
 	return nil
 }
