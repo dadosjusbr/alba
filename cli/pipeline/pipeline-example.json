@@ -1,7 +1,7 @@
 [
     {
         "pipeline": {
-        "name": "stage-go",
+        "name": "stage-go-day20",
         "stages":[
             {
                 "name": "stage-go",
@@ -20,13 +20,75 @@
             }
         ]
         },
-        "id": "stagego",
+        "id": "stagego20",
         "entity": "Stage-go",
         "city": "Campina Grande",
         "fu": "PB",
         "repo": "github.com/dadosjusbr/executor",
         "frequency": 30,
-        "start-day": 5,
+        "start-day": 20,
+        "limit-month-backward": 2,
+        "limit-year-backward": 2018
+    },
+    {
+        "pipeline": {
+        "name": "stage-go-day21",
+        "stages":[
+            {
+                "name": "stage-go",
+                "dir": "tutorial/stage-go",
+                "run-env": {
+                    "URL": "https://dadosjusbr.org/api/v1/orgao/trt13/2020/4",
+                    "OUTPUT_FOLDER":"/output"
+                }
+            },
+            {
+                "name": "stage-python",
+                "dir": "tutorial/stage-python",
+                "run-env": {
+                    "OUTPUT_FOLDER":"/output"
+                }
+            }
+        ]
+        },
+        "id": "stagego21",
+        "entity": "Stage-go",
+        "city": "Campina Grande",
+        "fu": "PB",
+        "repo": "github.com/dadosjusbr/executor",
+        "frequency": 30,
+        "start-day": 21,
+        "limit-month-backward": 2,
+        "limit-year-backward": 2018
+    },
+    {
+        "pipeline": {
+        "name": "stage-go-day22",
+        "stages":[
+            {
+                "name": "stage-go",
+                "dir": "tutorial/stage-go",
+                "run-env": {
+                    "URL": "https://dadosjusbr.org/api/v1/orgao/trt13/2020/4",
+                    "OUTPUT_FOLDER":"/output"
+                }
+            },
+            {
+                "name": "stage-python",
+                "dir": "tutorial/stage-python",
+                "run-env": {
+                    "OUTPUT_FOLDER":"/output"
+                }
+            }
+        ]
+        },
+        "id": "stagego22",
+        "entity": "Stage-go",
+        "city": "Campina Grande",
+        "fu": "PB",
+        "repo": "github.com/dadosjusbr/executor",
+        "frequency": 30,
+        "start-day": 22,
         "limit-month-backward": 2,
         "limit-year-backward": 2018
     }
