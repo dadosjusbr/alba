@@ -40,7 +40,7 @@ func newApp(dbClient *storage.DBClient) *application {
 	app.GET(apiRuns, func(c echo.Context) error {
 		return getExecutions(dbClient, c)
 	})
-	app.GET(apiRunsByid, func(c echo.Context) error {
+	app.GET(apiRunsByID, func(c echo.Context) error {
 		return getExecutionsByID(dbClient, c)
 	})
 
