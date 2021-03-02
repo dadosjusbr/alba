@@ -134,7 +134,6 @@ func prioritizeAndLimit(list []storage.Pipeline) []storage.Pipeline {
 }
 
 func getPipelinesToExecuteToday(db *storage.DBClient) ([]storage.Pipeline, error) {
-	var results []storage.Pipeline
 
 	day := time.Now().Day()
 	fmt.Println(day)
