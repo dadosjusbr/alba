@@ -6,6 +6,7 @@ import (
 	"net/smtp"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/dadosjusbr/alba/git"
@@ -31,6 +32,17 @@ func main() {
 
 	}
 
+	// Setup for send email
+	sender := os.Getenv("EMAIL_SENDER")
+	if sender == "" {
+		log.Fatal("setup error sending email. SENDER env var can not be empty")
+	}
+
+	password := os.Getenv("EMAIL_SENDER_PASSWORD")
+	if password == "" {
+		log.Fatal("setup error sending email. SENDER_PASSWORD env var can not be empty")
+	}
+
 	pipelines, err = getPipelinesToExecuteToday(dbClient)
 	if err != nil {
 		log.Fatal(err)
@@ -53,7 +65,7 @@ func main() {
 	toExecuteNow := prioritizeAndLimit(finalPipelines)
 
 	for _, p := range toExecuteNow {
-		err := run(p, dbClient)
+		err := run(sender, password, p, dbClient)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -61,7 +73,7 @@ func main() {
 	defer dbClient.Disconnect()
 }
 
-func run(p storage.Pipeline, db *storage.DBClient) error {
+func run(sender, password string, p storage.Pipeline, db *storage.DBClient) error {
 	baseDir := os.Getenv("BASEDIR")
 	if baseDir == "" {
 		return fmt.Errorf("error running pipeline. BASEDIR env var can not be empty")
@@ -107,10 +119,12 @@ func run(p storage.Pipeline, db *storage.DBClient) error {
 	}
 	db.InsertExecution(e)
 
-	receiver := "default@dadosjusbr.com"
-	if err := sendEmail(receiver, e.Entity, e.PipelineResult.Status); err != nil {
-		return fmt.Errorf("error after running pipeline. %q", err)
+	receiver := os.Getenv("EMAIL_RECEIVERS")
+	if receiver != "" {
+		if err := sendEmail(sender, password, receiver, e.Entity, e.PipelineResult.Status); err != nil {
+			return fmt.Errorf("error after running pipeline. %q", err)
 
+		}
 	}
 
 	return nil
@@ -134,7 +148,6 @@ func prioritizeAndLimit(list []storage.Pipeline) []storage.Pipeline {
 }
 
 func getPipelinesToExecuteToday(db *storage.DBClient) ([]storage.Pipeline, error) {
-
 	results, err := db.GetPipelinesByDay(time.Now().Day())
 	if err != nil {
 		return nil, fmt.Errorf("error getting pipelines by day: %q", err)
@@ -157,22 +170,11 @@ func getPipelinesForCompleteHistory(db *storage.DBClient) []storage.Pipeline {
 	return nil
 }
 
-func sendEmail(receiver, entity, status string) error {
-	sender := os.Getenv("EMAIL_SENDER")
-	if sender == "" {
-		return fmt.Errorf("setup error sending email. SENDER env var can not be empty")
-	}
+func sendEmail(sender, password, receiver, entity, status string) error {
+	addr := "smtp.gmail.com:587"
+	auth := smtp.PlainAuth("", sender, password, addr)
 
-	password := os.Getenv("EMAIL_SENDER_PASSWORD")
-	if password == "" {
-		return fmt.Errorf("setup error sending email. SENDER_PASSWORD env var can not be empty")
-	}
-
-	auth := smtp.PlainAuth("", sender, password, "smtp.gmail.com:587")
-
-	receivers := []string{
-		receiver,
-	}
+	receivers := strings.Split(receiver, ",")
 
 	message := []byte(fmt.Sprintf("To: %v \r\n"+
 		"Subject: [DadosJusBR: Alba] Extraímos novos dados! \r\n"+
