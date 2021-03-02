@@ -158,7 +158,7 @@ func getPipelinesForCompleteHistory(db *storage.DBClient) []storage.Pipeline {
 }
 
 func sendEmail(receiver, entity, status string) error {
-	sender := os.Getenv("SENDER")
+	sender := os.Getenv("EMAIL_SENDER")
 	if sender == "" {
 		return fmt.Errorf("setup error sending email. SENDER env var can not be empty")
 	}
