@@ -168,10 +168,6 @@ func sendEmail(receiver, entity, status string) error {
 		return fmt.Errorf("setup error sending email. SENDER_PASSWORD env var can not be empty")
 	}
 
-	smtpHost := "smtp.gmail.com"
-	smtpPort := "587"
-	addr := fmt.Sprintf("%s:%s", smtpHost, smtpPort)
-
 	auth := smtp.PlainAuth("", sender, password, smtpHost)
 
 	receivers := []string{
