@@ -163,7 +163,7 @@ func sendEmail(receiver, entity, status string) error {
 		return fmt.Errorf("setup error sending email. SENDER env var can not be empty")
 	}
 
-	password := os.Getenv("SENDER_PASSWORD")
+	password := os.Getenv("EMAIL_SENDER_PASSWORD")
 	if password == "" {
 		return fmt.Errorf("setup error sending email. SENDER_PASSWORD env var can not be empty")
 	}
