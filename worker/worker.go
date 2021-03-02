@@ -140,7 +140,7 @@ func getPipelinesToExecuteToday(db *storage.DBClient) ([]storage.Pipeline, error
 	fmt.Println(day)
 	results, err := db.GetPipelinesByDay(day)
 	if err != nil {
-		return []storage.Pipeline{}, fmt.Errorf("error getting pipelines by day: %q", err)
+		return nil, fmt.Errorf("error getting pipelines by day: %q", err)
 	}
 
 	return results, nil
