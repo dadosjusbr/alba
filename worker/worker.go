@@ -35,12 +35,12 @@ func main() {
 	// Setup for send email
 	sender := os.Getenv("EMAIL_SENDER")
 	if sender == "" {
-		log.Fatal("setup error sending email. SENDER env var can not be empty")
+		log.Fatal("setup error sending email. EMAIL_SENDER env var can not be empty")
 	}
 
 	password := os.Getenv("EMAIL_SENDER_PASSWORD")
 	if password == "" {
-		log.Fatal("setup error sending email. SENDER_PASSWORD env var can not be empty")
+		log.Fatal("setup error sending email. EMAIL_SENDER_PASSWORD env var can not be empty")
 	}
 
 	pipelines, err = getPipelinesToExecuteToday(dbClient)
@@ -171,9 +171,7 @@ func getPipelinesForCompleteHistory(db *storage.DBClient) []storage.Pipeline {
 }
 
 func sendEmail(sender, password, receiver, entity, status string) error {
-	addr := "smtp.gmail.com:587"
-	auth := smtp.PlainAuth("", sender, password, addr)
-
+	auth := smtp.PlainAuth("", sender, password, "smtp.gmail.com")
 	receivers := strings.Split(receiver, ",")
 
 	message := []byte(fmt.Sprintf("To: %v \r\n"+
@@ -182,7 +180,7 @@ func sendEmail(sender, password, receiver, entity, status string) error {
 		"Olá, sou a Alba e acabei de executar o pipeline para o órgão: %s com status: %s!\n"+
 		"Acompanhe mais sobre o meu trabalho no site: https://dadosjusbr.org/", receivers, entity, status))
 
-	err := smtp.SendMail(addr, auth, sender, receivers, message)
+	err := smtp.SendMail("smtp.gmail.com:587", auth, sender, receivers, message)
 	if err != nil {
 		return fmt.Errorf("error sending email: %q", err)
 	}
