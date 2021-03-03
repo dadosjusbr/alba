@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
-const database = "alba"
+const database = "dadosjusbr-alba"
 const pipelineCollection = "pipeline"
 const executionCollection = "execution"
 
@@ -93,6 +93,7 @@ func setIndexesPipeline(pipeline *mongo.Collection) error {
 // InsertPipeline inserts a pipeline in the database.
 func (c *DBClient) InsertPipeline(p Pipeline) error {
 	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
+
 	if _, err := collection.InsertOne(context.TODO(), p); err != nil {
 		return fmt.Errorf("insert error: %q", err)
 	}
@@ -123,14 +124,9 @@ func (c *DBClient) GetPipelines() ([]Pipeline, error) {
 		return nil, fmt.Errorf("error getting pipelines. Find error: %q", err)
 	}
 
-	for itens.Next(context.Background()) {
-		var item Pipeline
-		if err := itens.Decode(&item); err != nil {
-			return nil, fmt.Errorf("error getting pipelines. Decode error: %q", err)
-		}
-		pipelines = append(pipelines, item)
+	if err = itens.All(context.TODO(), &pipelines); err != nil {
+		return nil, fmt.Errorf("error getting pipelines. Decode error: %q", err)
 	}
-	itens.Close(context.Background())
 
 	return pipelines, nil
 }
@@ -150,6 +146,26 @@ func (c *DBClient) GetPipeline(id string) (Pipeline, error) {
 	return pipeline, nil
 }
 
+// GetPipelinesByDay returns all pipelines that have the start-day equal the param.
+func (c *DBClient) GetPipelinesByDay(day int) ([]Pipeline, error) {
+	var pipelines []Pipeline
+
+	collection := c.mgoClient.Database(database).Collection(pipelineCollection)
+	itens, err := collection.Find(context.TODO(), bson.D{{Key: "start-day", Value: day}})
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return []Pipeline{}, nil
+		}
+		return nil, fmt.Errorf("error getting pipelines. Find error: %q", err)
+	}
+
+	if err = itens.All(context.TODO(), &pipelines); err != nil {
+		return nil, fmt.Errorf("error getting pipelines. Decode error: %q", err)
+	}
+
+	return pipelines, nil
+}
+
 // GetExecutions returns all executions in the database.
 func (c *DBClient) GetExecutions() ([]Execution, error) {
 	var executions []Execution
@@ -163,14 +179,9 @@ func (c *DBClient) GetExecutions() ([]Execution, error) {
 		return nil, fmt.Errorf("error getting executions. Find error: %q", err)
 	}
 
-	for itens.Next(context.Background()) {
-		var item Execution
-		if err := itens.Decode(&item); err != nil {
-			return nil, fmt.Errorf("error getting executions. Decode error: %q", err)
-		}
-		executions = append(executions, item)
+	if err = itens.All(context.TODO(), &executions); err != nil {
+		return nil, fmt.Errorf("error getting executions. Decode error: %q", err)
 	}
-	itens.Close(context.Background())
 
 	return executions, nil
 }
@@ -188,14 +199,9 @@ func (c *DBClient) GetExecutionsByID(id string) ([]Execution, error) {
 		return nil, fmt.Errorf("error getting executions. Find error: %q", err)
 	}
 
-	for itens.Next(context.Background()) {
-		var item Execution
-		if err := itens.Decode(&item); err != nil {
-			return nil, fmt.Errorf("error getting executions. Decode error: %q", err)
-		}
-		executions = append(executions, item)
+	if err = itens.All(context.TODO(), &executions); err != nil {
+		return nil, fmt.Errorf("error getting executions. Decode error: %q", err)
 	}
-	itens.Close(context.Background())
 
 	return executions, nil
 }
