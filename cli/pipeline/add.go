@@ -53,20 +53,22 @@ func (a addCommand) do(c *cli.Context) error {
 
 // NewAddCommand creates a new command to add a pipeline to the database.
 func NewAddCommand() *cli.Command {
-	uri := os.Getenv("MONGODB")
-	if uri == "" {
-		log.Fatal("[add command] error trying get environment variable: $MONGODB is empty")
-	}
-	client, err := storage.NewDBClient(uri)
-	if err != nil {
-		log.Fatal(err)
-	}
-	c := newAddCommand(client)
-	c.Before = func(c *cli.Context) error {
-		return client.Connect()
+	dbClientPtr := &storage.DBClient{}
+	c := newAddCommand(dbClientPtr)
+	c.Before = func(ctx *cli.Context) error {
+		uri := os.Getenv("MONGODB")
+		if uri == "" {
+			log.Fatal("[add command] error trying get environment variable: $MONGODB is empty")
+		}
+		dbClient, err := storage.NewDBClient(uri)
+		if err != nil {
+			log.Fatal(err)
+		}
+		*dbClient = *dbClientPtr
+		return dbClient.Connect()
 	}
 	c.After = func(c *cli.Context) error {
-		return client.Disconnect()
+		return dbClientPtr.Disconnect()
 	}
 	return c
 }

@@ -24,8 +24,7 @@ func ExampleNewAddCommand() {
 		"--from-file=pipeline-example.json",
 	})
 	// Output:
-	//Pipeline ID: trt13, Repo: github.com/dadosjusbr/coletores
-	//Pipeline ID: mppb, Repo: github.com/dadosjusbr/coletores
+	//Pipeline ID: stagego, Repo: github.com/dadosjusbr/executor
 }
 
 func TestAdd_RequiredParam(t *testing.T) {
