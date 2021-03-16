@@ -33,15 +33,17 @@ func main() {
 	}
 
 	// Setup for send email
-	sender := os.Getenv("EMAIL_SENDER")
-	if sender == "" {
+	emailSender := os.Getenv("EMAIL_SENDER")
+	if emailSender == "" {
 		log.Fatal("setup error sending email. EMAIL_SENDER env var can not be empty")
 	}
 
-	password := os.Getenv("EMAIL_SENDER_PASSWORD")
-	if password == "" {
+	emailPassword := os.Getenv("EMAIL_SENDER_PASSWORD")
+	if emailPassword == "" {
 		log.Fatal("setup error sending email. EMAIL_SENDER_PASSWORD env var can not be empty")
 	}
+
+	emailReceiver := os.Getenv("EMAIL_RECEIVERS")
 
 	pipelines, err = getPipelinesToExecuteToday(dbClient)
 	if err != nil {
@@ -65,7 +67,7 @@ func main() {
 	toExecuteNow := prioritizeAndLimit(finalPipelines)
 
 	for _, p := range toExecuteNow {
-		err := run(sender, password, p, dbClient)
+		err := run(emailSender, emailPassword, emailReceiver, p, dbClient)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -73,7 +75,7 @@ func main() {
 	defer dbClient.Disconnect()
 }
 
-func run(sender, password string, p storage.Pipeline, db *storage.DBClient) error {
+func run(emailSender, emailPassword, emailReceiver string, p storage.Pipeline, db *storage.DBClient) error {
 	baseDir := os.Getenv("BASEDIR")
 	if baseDir == "" {
 		return fmt.Errorf("error running pipeline. BASEDIR env var can not be empty")
@@ -119,9 +121,8 @@ func run(sender, password string, p storage.Pipeline, db *storage.DBClient) erro
 	}
 	db.InsertExecution(e)
 
-	receiver := os.Getenv("EMAIL_RECEIVERS")
-	if receiver != "" {
-		if err := sendEmail(sender, password, receiver, e.Entity, e.PipelineResult.Status); err != nil {
+	if emailReceiver != "" {
+		if err := sendEmail(emailSender, emailPassword, emailReceiver, e.Entity, e.PipelineResult.Status); err != nil {
 			return fmt.Errorf("error after running pipeline. %q", err)
 
 		}
@@ -143,7 +144,8 @@ func mergeEnv(defaultEnv, stageEnv map[string]string) map[string]string {
 }
 
 func prioritizeAndLimit(list []storage.Pipeline) []storage.Pipeline {
-
+	// TODO: ordenar do mais recente para o mais antigo
+	// TODO: receber quantidade máxima de execuções via parâmetro e manter somente os x primeiros
 	return list
 }
 
@@ -171,6 +173,9 @@ func getPipelinesForCompleteHistory(db *storage.DBClient) []storage.Pipeline {
 }
 
 func sendEmail(sender, password, receiver, entity, status string) error {
+	// TODO: migrar para templates
+	// TODO: modificar email para apontar para URL que a pessoa operadora possa ver o erro que aconteceu (a URL base do alba também deve ser uma variável de ambiente)
+
 	auth := smtp.PlainAuth("", sender, password, "smtp.gmail.com")
 	receivers := strings.Split(receiver, ",")
 
