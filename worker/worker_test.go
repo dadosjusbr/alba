@@ -66,20 +66,21 @@ func (fake fakeFinder) InsertExecution(e storage.Execution) error {
 	return fake.err
 }
 
-// TODO: Retornar as últimas execuções de cada pipeline
+// TODO: Retornar a última execução de cada pipeline
 func (fake fakeFinder) GetLastExecutionsForAllPipelines() ([]storage.Execution, error) {
 	return fake.executions, fake.err
 }
 
-// RODO: Retornar as <limit> ultimas execuções daquele pipeline
+// TODO: Retornar as <limit> ultimas execuções daquele pipeline
 func (fake fakeFinder) GetLastExecutionsByPipelineID(limit, id int) ([]storage.Execution, error) {
 	return fake.executions, fake.err
 }
 
 // PrioritizeAndLimit
-// 1º descarta se o pipeline já tem uma execução finalizada com sucesso hoje
-// 2º se o número se execuções com erro for igual ou maior que 3
-// por ultimo aplicar filtro de tamanho
+// 1º descartar se o pipeline já tem uma execução finalizada com sucesso hoje
+// 2º descartar se o número de execuções com erro for igual ou maior que o limite
+// ...
+// por último aplicar filtro de tamanho
 func TestPrioritizeAndLimit_LimitTest(t *testing.T) {
 	is := is.New(t)
 	list := pipelinesDB

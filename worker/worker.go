@@ -72,6 +72,7 @@ func main() {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
+	// TODO: merge pipelines a fim de não repetir os ids
 	// final_pipelines = append(final_pipelines, pipelines...)
 
 	// pipelines, err = getPipelinesForCompleteHistory(dbClient)
