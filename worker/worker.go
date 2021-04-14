@@ -13,6 +13,13 @@ import (
 	"github.com/dadosjusbr/alba/storage"
 )
 
+type dbInterface interface {
+	GetPipelinesByDay(day int) ([]storage.Pipeline, error)
+	InsertExecution(e storage.Execution) error
+	GetLastExecutionsForAllPipelines() ([]storage.Execution, error)
+	GetLastExecutionsByPipelineID(limit, id int) ([]storage.Execution, error)
+}
+
 func main() {
 	var pipelines []storage.Pipeline
 	var finalPipelines []storage.Pipeline
@@ -20,6 +27,16 @@ func main() {
 	uri := os.Getenv("MONGODB")
 	if uri == "" {
 		log.Fatal("error trying get environment variable: $MONGODB is empty")
+	}
+
+	errorLimitStr := os.Getenv("ERROR_LIMIT")
+	if uri == "" {
+		log.Fatal("error trying get environment variable: $ERROR_LIMIT is empty")
+	}
+
+	errorLimit, err := strconv.Atoi(errorLimitStr)
+	if err != nil {
+		log.Fatalf("error trying convert variable $ERROR_LIMIT: %q", err)
 	}
 
 	dbClient, err := storage.NewDBClient(uri)
@@ -61,10 +78,8 @@ func main() {
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
-	// final_pipelines = append(final_pipelines, pipelines...)
 
-	// Algoritmo: shuffle na lista + cap
-	toExecuteNow := prioritizeAndLimit(finalPipelines)
+	toExecuteNow := prioritizeAndLimit(dbClient, finalPipelines, errorLimit)
 
 	for _, p := range toExecuteNow {
 		err := run(emailSender, emailPassword, emailReceiver, p, dbClient)
@@ -143,13 +158,12 @@ func mergeEnv(defaultEnv, stageEnv map[string]string) map[string]string {
 	return env
 }
 
-func prioritizeAndLimit(list []storage.Pipeline) []storage.Pipeline {
-	// TODO: ordenar do mais recente para o mais antigo
-	// TODO: receber quantidade máxima de execuções via parâmetro e manter somente os x primeiros
+func prioritizeAndLimit(db dbInterface, list []storage.Pipeline, limit int) []storage.Pipeline {
+
 	return list
 }
 
-func getPipelinesToExecuteToday(db *storage.DBClient) ([]storage.Pipeline, error) {
+func getPipelinesToExecuteToday(db dbInterface) ([]storage.Pipeline, error) {
 	results, err := db.GetPipelinesByDay(time.Now().Day())
 	if err != nil {
 		return nil, fmt.Errorf("error getting pipelines by day: %q", err)
@@ -160,14 +174,14 @@ func getPipelinesToExecuteToday(db *storage.DBClient) ([]storage.Pipeline, error
 
 // Apenas as execuções que devem acontecer por causa do mecanismo de
 // tolerância à falhas.
-func getPipelinesThatFailed(db *storage.DBClient) []storage.Pipeline {
+func getPipelinesThatFailed(db dbInterface) []storage.Pipeline {
 
 	return nil
 }
 
 // Apenas execuções de devem acontecer para completar o histórico. Devemos
 // ignorar casos em que já houve tentativa de execução, quer seja sucesso ou falha.
-func getPipelinesForCompleteHistory(db *storage.DBClient) []storage.Pipeline {
+func getPipelinesForCompleteHistory(db dbInterface) []storage.Pipeline {
 
 	return nil
 }
